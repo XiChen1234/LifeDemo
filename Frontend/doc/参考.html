@@ -1,0 +1,2609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>生活台 · Life Console</title>
+<style>
+:root{
+  --bg:#f7f9f8;
+  --card:#ffffff;
+  --surface-2:#fafcfb;
+
+  --text-primary:#26302d;
+  --text-secondary:#6b7570;
+  --text-muted:#a2aaa6;
+
+  --line:#e8eeeb;
+
+  --green:#55b99a;
+  --green-soft:#eaf7f2;
+  --green-deep:#3e9a7c;
+  --yellow:#f3c96a;
+  --yellow-soft:#fff8e7;
+  --blue:#78a9dc;
+  --blue-soft:#eef5fc;
+  --pink:#e5a3b6;
+  --pink-soft:#fff1f5;
+
+  --success:#45a982;
+  --warn:#d49a3a;
+  --danger:#d47474;
+
+  --radius-sm:9px;
+  --radius-md:12px;
+  --radius-lg:16px;
+  --radius-xl:20px;
+
+  --shadow-card:0 3px 16px rgba(45,70,60,.045);
+  --shadow-soft:0 1px 4px rgba(45,70,60,.04);
+
+  --fs-xs:9px;  --fs-sm:10px; --fs-md:11px; --fs-base:12px;
+  --fs-lg:13px; --fs-xl:15px; --fs-2xl:21px; --fs-3xl:24px;
+
+  --space-1:4px; --space-2:8px; --space-3:12px;
+  --space-4:16px; --space-5:22px; --space-6:32px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg);
+  color:var(--text-primary);
+  font-size:var(--fs-base);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ===================== 布局骨架 ===================== */
+.app{display:flex;align-items:flex-start;min-height:100vh;}
+
+.sidebar{
+  width:196px;flex:none;position:sticky;top:0;height:100vh;
+  background:var(--card);border-right:1px solid var(--line);
+  padding:20px 12px 18px;display:flex;flex-direction:column;
+}
+
+.brand{display:flex;align-items:center;gap:9px;padding:0 8px 20px;}
+.brand-mark{
+  width:28px;height:28px;border-radius:10px;flex:none;
+  background:linear-gradient(140deg,var(--green),#8fd6c0);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:13px;font-weight:600;letter-spacing:.4px;
+  box-shadow:0 4px 10px rgba(85,185,154,.28);
+}
+.brand-name{font-size:var(--fs-lg);font-weight:600;letter-spacing:.3px;}
+.brand-sub{font-size:var(--fs-xs);color:var(--text-muted);letter-spacing:.7px;}
+
+.nav{display:flex;flex-direction:column;gap:2px;}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:var(--radius-sm);
+  color:var(--text-secondary);font-size:var(--fs-base);
+  cursor:pointer;user-select:none;
+  transition:background .18s ease,color .18s ease;
+}
+.nav-item:hover{background:var(--surface-2);color:var(--text-primary);}
+.nav-item.active{background:var(--green-soft);color:var(--green-deep);font-weight:600;}
+.nav-dot{
+  width:5px;height:5px;border-radius:50%;background:currentColor;
+  opacity:.3;flex:none;transition:opacity .18s ease;
+}
+.nav-item.active .nav-dot{opacity:1;}
+
+.nav-foot{margin-top:auto;padding-top:14px;}
+.nav-foot .nav-item{color:var(--text-muted);}
+.side-note{
+  font-size:var(--fs-xs);color:var(--text-muted);
+  padding:10px 10px 0;line-height:1.7;
+}
+
+.main{flex:1;min-width:0;padding:22px 26px 48px;max-width:1240px;}
+
+.view{display:none;}
+.view.active{display:block;animation:vfade .2s ease;}
+@keyframes vfade{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:none;}}
+
+.view-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:16px;margin-bottom:16px;
+}
+.view-head h1{font-size:var(--fs-3xl);font-weight:600;letter-spacing:-.3px;line-height:1.15;}
+.view-head p{font-size:var(--fs-md);color:var(--text-muted);margin-top:6px;}
+.head-tag{
+  font-size:var(--fs-sm);color:var(--green-deep);background:var(--green-soft);
+  padding:5px 11px;border-radius:99px;white-space:nowrap;
+}
+
+/* ===================== 通用网格 / 卡片 ===================== */
+.stack{display:flex;flex-direction:column;gap:14px;}
+.grid{display:grid;gap:14px;}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr));}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr));}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr));}
+.g13{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);}
+.g31{grid-template-columns:minmax(0,1.8fr) minmax(0,1fr);}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius-lg);
+  padding:16px 16px 14px;
+  box-shadow:var(--shadow-card);
+  border:1px solid #f2f6f4;
+}
+.card-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:12px;margin-bottom:12px;
+}
+.card-title{font-size:var(--fs-lg);font-weight:600;letter-spacing:.1px;}
+.card-sub{font-size:var(--fs-sm);color:var(--text-muted);margin-top:3px;}
+
+/* ===================== 页面状态横幅 ===================== */
+.page-banner{
+  position:relative;overflow:hidden;
+  background:linear-gradient(115deg,#eaf7f2 0%,#f6fbf9 55%,#ffffff 100%);
+  border:1px solid #e9f4ef;border-radius:var(--radius-xl);
+  padding:18px 22px;
+  display:flex;align-items:center;justify-content:space-between;gap:22px;
+  flex-wrap:wrap;
+}
+.page-banner::after{
+  content:'';position:absolute;right:-46px;top:-58px;width:190px;height:190px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(85,185,154,.16),transparent 70%);
+}
+.pb-main{position:relative;min-width:240px;flex:1;}
+.pb-title{font-size:var(--fs-xl);font-weight:600;letter-spacing:-.2px;}
+.pb-desc{font-size:var(--fs-base);color:var(--text-secondary);margin-top:5px;line-height:1.7;max-width:560px;}
+.pb-chips{display:flex;gap:8px;flex-wrap:wrap;position:relative;}
+
+/* ===================== Hero ===================== */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:14px;}
+
+.hero-banner{
+  position:relative;overflow:hidden;
+  background:linear-gradient(115deg,#eaf7f2 0%,#f6fbf9 55%,#ffffff 100%);
+  border:1px solid #e9f4ef;border-radius:var(--radius-xl);
+  padding:24px 26px;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+}
+.hero-banner::after{
+  content:'';position:absolute;right:-46px;top:-58px;width:190px;height:190px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(85,185,154,.16),transparent 70%);
+}
+.hero-hello{font-size:var(--fs-2xl);font-weight:600;letter-spacing:-.3px;position:relative;}
+.hero-quote{
+  font-size:var(--fs-base);color:var(--text-secondary);
+  margin-top:8px;max-width:420px;line-height:1.75;position:relative;
+}
+.hero-meta{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;position:relative;}
+.chip{
+  font-size:var(--fs-sm);color:var(--green-deep);
+  background:rgba(255,255,255,.85);border:1px solid #dcf0e8;
+  padding:4px 10px;border-radius:99px;
+}
+.hero-side{text-align:right;flex:none;position:relative;}
+.hero-date{font-size:var(--fs-3xl);font-weight:600;letter-spacing:-.8px;color:var(--green-deep);line-height:1;}
+.hero-wd{font-size:var(--fs-md);color:var(--text-secondary);margin-top:7px;}
+
+.hero-card{
+  position:relative;overflow:hidden;
+  background:linear-gradient(115deg,#eaf7f2 0%,#f6fbf9 55%,#ffffff 100%);
+  border:1px solid #e9f4ef;border-radius:var(--radius-xl);
+  padding:22px 24px;display:flex;flex-direction:column;justify-content:center;
+}
+.hero-card::after{
+  content:'';position:absolute;right:-46px;top:-58px;width:190px;height:190px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(85,185,154,.16),transparent 70%);
+}
+.hero-mini{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.mini-card{
+  background:var(--card);border-radius:var(--radius-lg);
+  padding:14px;border:1px solid #f2f6f4;box-shadow:var(--shadow-card);
+  display:flex;flex-direction:column;justify-content:center;gap:8px;
+}
+.mini-label{font-size:var(--fs-sm);color:var(--text-secondary);}
+.mini-value{font-size:var(--fs-2xl);font-weight:600;letter-spacing:-.4px;line-height:1.1;}
+.mini-value span{font-size:var(--fs-base);font-weight:500;color:var(--text-muted);}
+
+/* ===================== 指标卡 ===================== */
+.metric{display:flex;flex-direction:column;gap:6px;padding:14px 16px;}
+.metric-label{font-size:var(--fs-md);color:var(--text-secondary);}
+.metric-value{
+  font-size:var(--fs-2xl);font-weight:600;
+  letter-spacing:-.4px;line-height:1.15;
+}
+.metric-value .u{
+  font-size:var(--fs-base);font-weight:500;
+  color:var(--text-muted);margin:0 1px;
+}
+.metric-foot{font-size:var(--fs-sm);color:var(--text-muted);}
+.up{color:var(--success);}
+.down{color:var(--danger);}
+
+/* ===================== 紧凑指标行（笔记页） ===================== */
+.metric-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+.metric-slim{
+  background:var(--card);border:1px solid #f2f6f4;border-radius:var(--radius-md);
+  padding:10px 13px;box-shadow:var(--shadow-soft);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  min-width:0;
+}
+.metric-slim .ms-label{
+  font-size:var(--fs-sm);color:var(--text-secondary);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.metric-slim .ms-value{font-size:var(--fs-xl);font-weight:600;letter-spacing:-.3px;white-space:nowrap;}
+.metric-slim .ms-value span{font-size:var(--fs-sm);font-weight:500;color:var(--text-muted);margin-left:1px;}
+
+/* ===================== 进度条 ===================== */
+.bar{height:6px;border-radius:99px;background:#eff4f1;overflow:hidden;}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--green);}
+.bar.sm{height:4px;}
+
+.prow{display:flex;flex-direction:column;gap:6px;padding:8px 0;}
+.prow-top{display:flex;justify-content:space-between;align-items:baseline;font-size:var(--fs-md);}
+.prow-name{color:var(--text-secondary);}
+.prow-val{color:var(--text-primary);font-weight:600;font-size:var(--fs-base);}
+
+/* ===================== 目标（纵向） ===================== */
+.goal-vert{display:flex;flex-direction:column;}
+.goal-row{
+  display:grid;grid-template-columns:88px 1fr 118px;
+  align-items:center;gap:16px;
+  padding:11px 0;border-bottom:1px solid var(--line);
+}
+.goal-row:last-child{border-bottom:0;padding-bottom:2px;}
+.goal-name{font-size:var(--fs-base);color:var(--text-secondary);}
+.goal-num{font-size:var(--fs-base);font-weight:600;text-align:right;white-space:nowrap;}
+.goal-num em{font-style:normal;font-weight:400;color:var(--text-muted);font-size:var(--fs-sm);margin-left:5px;}
+
+/* ===================== 列表 ===================== */
+.list{display:flex;flex-direction:column;}
+.list-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 0;border-bottom:1px solid var(--line);
+}
+.list-row:last-child{border-bottom:0;padding-bottom:2px;}
+.list-main{flex:1;min-width:0;}
+.list-title{
+  font-size:var(--fs-base);color:var(--text-primary);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.list-sub{font-size:var(--fs-sm);color:var(--text-muted);margin-top:2px;}
+.list-amt{font-size:var(--fs-base);font-weight:600;white-space:nowrap;}
+
+.list-row.click{cursor:pointer;border-radius:8px;padding:8px 8px;transition:background .16s ease;}
+.list-row.click:hover{background:var(--surface-2);}
+.list-row.click.on{background:var(--green-soft);}
+.list-row.click.on .list-title{color:var(--green-deep);font-weight:600;}
+
+.list-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 26px;}
+
+/* ===================== 任务 ===================== */
+.task{display:flex;align-items:center;gap:9px;padding:7px 0;}
+.task-check{
+  width:15px;height:15px;border-radius:5px;flex:none;position:relative;
+  border:1.5px solid #dfe8e3;cursor:pointer;transition:all .16s ease;
+}
+.task-check:hover{border-color:var(--green);}
+.task-check.done{background:var(--green);border-color:var(--green);}
+.task-check.done::after{
+  content:'';position:absolute;left:4.5px;top:1.5px;
+  width:4px;height:8px;
+  border:1.5px solid #fff;border-top:0;border-left:0;
+  transform:rotate(42deg);
+}
+.task-text{flex:1;font-size:var(--fs-base);}
+.task.done .task-text{color:var(--text-muted);text-decoration:line-through;}
+
+/* ===================== 标签 ===================== */
+.pill{
+  font-size:var(--fs-xs);padding:2px 7px;border-radius:99px;
+  font-weight:500;white-space:nowrap;flex:none;
+}
+.pill.high{background:var(--pink-soft);color:#c9748a;}
+.pill.mid{background:var(--yellow-soft);color:#b98b2e;}
+.pill.low{background:var(--green-soft);color:var(--green-deep);}
+.pill.blue{background:var(--blue-soft);color:#5b8fc4;}
+
+/* ===================== 图例 ===================== */
+.legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;}
+.lg{display:flex;align-items:center;gap:5px;font-size:var(--fs-sm);color:var(--text-secondary);}
+.lg i{width:8px;height:8px;border-radius:3px;display:block;flex:none;}
+
+/* ===================== 图表 ===================== */
+.chart{position:relative;width:100%;}
+.chart-svg{display:block;}
+
+.donut-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;pointer-events:none;
+}
+.donut-center b{font-size:var(--fs-xl);font-weight:600;letter-spacing:-.2px;}
+.donut-center span{font-size:var(--fs-sm);color:var(--text-muted);margin-top:2px;}
+
+.chart-tip{
+  position:fixed;z-index:99;pointer-events:none;
+  background:#34403b;color:#fff;border-radius:9px;
+  padding:7px 10px;font-size:var(--fs-sm);line-height:1.6;
+  box-shadow:0 6px 20px rgba(30,45,40,.22);
+  opacity:0;transform:translateY(3px);
+  transition:opacity .14s ease,transform .14s ease;
+  white-space:nowrap;
+}
+.chart-tip.on{opacity:1;transform:none;}
+.chart-tip b{margin-left:6px;font-weight:600;}
+.tip-dot{
+  display:inline-block;width:6px;height:6px;border-radius:50%;
+  margin-right:6px;vertical-align:1px;
+}
+
+/* ===================== 日历 ===================== */
+.calendar{width:100%;}
+.cal-wd-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px;}
+.cal-wd{font-size:var(--fs-sm);color:var(--text-muted);text-align:center;padding:2px 0;letter-spacing:.5px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.cal-cell{
+  background:var(--surface-2);
+  border:1px solid #eef4f1;
+  border-radius:var(--radius-sm);
+  min-height:82px;
+  padding:6px 7px;
+  display:flex;flex-direction:column;gap:4px;
+  transition:border-color .16s ease,box-shadow .16s ease;
+  min-width:0;
+}
+.cal-cell:hover{border-color:#d7ece4;box-shadow:var(--shadow-soft);}
+.cal-cell.other{opacity:.35;background:transparent;border-color:transparent;pointer-events:none;}
+.cal-cell.today{background:var(--green-soft);border-color:#cfe9df;}
+.cal-day{font-size:var(--fs-md);font-weight:600;color:var(--text-secondary);line-height:1;}
+.cal-cell.today .cal-day{color:var(--green-deep);}
+.cal-evts{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.cal-evt{
+  font-size:8px;line-height:1.35;
+  padding:1px 5px;border-radius:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  cursor:pointer;max-width:100%;
+}
+.cal-evt.high{background:var(--pink-soft);color:#c9748a;}
+.cal-evt.mid{background:var(--yellow-soft);color:#b98b2e;}
+.cal-evt.low{background:var(--green-soft);color:var(--green-deep);}
+.cal-evt.ddl{border-left:2px solid var(--danger);}
+.cal-more{font-size:8px;color:var(--text-muted);padding-left:4px;}
+.cal-legend{display:flex;gap:12px;flex-wrap:wrap;}
+
+/* ===================== 习惯卡片 ===================== */
+.habits{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+.habit{
+  background:var(--surface-2);border:1px solid #eef4f1;
+  border-radius:var(--radius-md);padding:13px 14px;
+  cursor:pointer;user-select:none;
+  display:flex;flex-direction:column;gap:9px;
+  transition:background .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+.habit:hover{border-color:#d7ece4;box-shadow:var(--shadow-soft);}
+.habit.done{background:var(--green-soft);border-color:#cfe9df;}
+.habit-top{display:flex;align-items:center;justify-content:space-between;}
+.habit-ico{font-size:16px;line-height:1;}
+.habit-check{
+  width:16px;height:16px;border-radius:50%;border:1.5px solid #dfe8e3;
+  position:relative;transition:all .18s ease;flex:none;
+}
+.habit.done .habit-check{background:var(--green);border-color:var(--green);}
+.habit.done .habit-check::after{
+  content:'';position:absolute;left:5px;top:2.5px;
+  width:4px;height:7px;
+  border:1.5px solid #fff;border-top:0;border-left:0;
+  transform:rotate(42deg);
+}
+.habit-name{font-size:var(--fs-base);color:var(--text-primary);}
+.habit-val{font-size:var(--fs-sm);color:var(--text-muted);}
+
+/* ===================== 树 ===================== */
+.tree{display:flex;flex-direction:column;gap:1px;}
+.tree-item{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 9px;border-radius:8px;
+  font-size:var(--fs-base);color:var(--text-secondary);
+  cursor:pointer;transition:background .16s ease;
+}
+.tree-item:hover{background:var(--surface-2);}
+.tree-item.on{background:var(--green-soft);color:var(--green-deep);font-weight:600;}
+.tree-item .cnt{margin-left:auto;font-size:var(--fs-sm);color:var(--text-muted);font-weight:400;}
+.tree-child{padding-left:20px;}
+
+/* ===================== 笔记布局 ===================== */
+.notes-layout{
+  display:grid;
+  grid-template-columns:168px minmax(0,1fr) 232px;
+  gap:14px;align-items:start;
+}
+.notes-layout .tree-card{padding:14px 12px;}
+
+.preview-card{
+  padding:26px 30px 24px;
+  min-height:520px;
+  display:flex;flex-direction:column;
+}
+.preview-head{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px;}
+.preview-title{font-size:var(--fs-2xl);font-weight:600;letter-spacing:-.3px;line-height:1.35;}
+.preview-meta{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;}
+.preview-time{font-size:var(--fs-sm);color:var(--text-muted);}
+.preview-body{font-size:var(--fs-base);color:var(--text-secondary);line-height:2;flex:1;}
+.preview-body p{margin-bottom:13px;}
+.preview-body p:last-child{margin-bottom:0;}
+.preview-body h4{
+  font-size:var(--fs-lg);font-weight:600;color:var(--text-primary);
+  margin:4px 0 9px;padding-left:9px;border-left:2px solid var(--green);
+}
+.preview-foot{
+  margin-top:16px;padding-top:13px;border-top:1px dashed var(--line);
+  display:flex;gap:6px;flex-wrap:wrap;
+}
+
+.side-col{display:flex;flex-direction:column;gap:14px;}
+.side-col .card{padding:14px 13px 12px;}
+.side-col .list-row{padding:7px 6px;}
+.side-col .list-title{font-size:var(--fs-md);}
+.side-col .list-sub{font-size:var(--fs-xs);}
+
+/* ===================== 标签条形 ===================== */
+.tagbars{display:flex;flex-direction:column;gap:8px;}
+.tagbar{display:grid;grid-template-columns:34px 1fr 26px;align-items:center;gap:8px;}
+.tag-name{font-size:var(--fs-sm);color:var(--text-secondary);}
+.tag-cnt{font-size:var(--fs-sm);color:var(--text-muted);text-align:right;}
+
+/* ===================== 设置表单 ===================== */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.field:last-child{margin-bottom:0;}
+.field label{font-size:var(--fs-sm);color:var(--text-secondary);}
+.input{
+  border:1px solid var(--line);border-radius:var(--radius-sm);
+  padding:8px 11px;font-size:var(--fs-base);color:var(--text-primary);
+  background:var(--surface-2);font-family:inherit;outline:none;
+  transition:border-color .16s ease;
+}
+.input:focus{border-color:var(--green);background:#fff;}
+
+.avatar{
+  width:40px;height:40px;border-radius:14px;flex:none;
+  background:linear-gradient(140deg,var(--green),#8fd6c0);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:var(--fs-xl);font-weight:600;
+  box-shadow:0 4px 10px rgba(85,185,154,.25);
+}
+
+.opt-row{display:flex;gap:8px;flex-wrap:wrap;}
+.opt{
+  font-size:var(--fs-base);color:var(--text-secondary);
+  border:1px solid var(--line);border-radius:99px;
+  padding:6px 14px;cursor:pointer;transition:all .16s ease;
+}
+.opt:hover{border-color:#cfe9df;}
+.opt.on{background:var(--green-soft);border-color:#cfe9df;color:var(--green-deep);font-weight:600;}
+
+.src{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--radius-md);
+  background:var(--surface-2);margin-bottom:8px;
+}
+.src:last-child{margin-bottom:0;}
+.src-ico{
+  width:26px;height:26px;border-radius:9px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:var(--fs-md);font-weight:600;
+}
+.src-main{flex:1;min-width:0;}
+.src-name{font-size:var(--fs-base);}
+.src-desc{font-size:var(--fs-sm);color:var(--text-muted);margin-top:2px;}
+
+.about-line{
+  display:flex;justify-content:space-between;
+  font-size:var(--fs-md);color:var(--text-secondary);
+  padding:7px 0;border-bottom:1px dashed var(--line);
+}
+.about-line:last-child{border-bottom:0;}
+.about-line span:last-child{color:var(--text-primary);font-weight:500;}
+
+/* ===================== 响应式 ===================== */
+@media (max-width:1180px){
+  .notes-layout{grid-template-columns:150px minmax(0,1fr);}
+  .notes-layout .side-col{grid-column:1 / -1;flex-direction:row;}
+  .notes-layout .side-col > .card{flex:1;min-width:0;}
+}
+@media (max-width:1120px){
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .hero{grid-template-columns:minmax(0,1fr);}
+  .hero-mini{grid-template-columns:1fr 1fr;}
+  .g13,.g31{grid-template-columns:minmax(0,1fr);}
+  .metric-row{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:900px){
+  .sidebar{width:150px;}
+  .g3,.g2{grid-template-columns:minmax(0,1fr);}
+  .main{padding:18px 16px 40px;}
+  .habits{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .notes-layout{grid-template-columns:minmax(0,1fr);}
+  .notes-layout .side-col{flex-direction:column;}
+  .goal-row{grid-template-columns:72px 1fr 100px;gap:10px;}
+  .hero-banner{flex-direction:column;align-items:flex-start;}
+  .hero-side{text-align:left;}
+  .list-cols{grid-template-columns:minmax(0,1fr);}
+  .preview-card{padding:20px 18px;min-height:0;}
+  .cal-cell{min-height:60px;padding:4px 5px;}
+  .cal-evt{font-size:7px;}
+  .cal-wd{font-size:9px;}
+  .page-banner{padding:16px 18px;}
+}
+@media (max-width:620px){
+  .habits{grid-template-columns:minmax(0,1fr);}
+  .metric-row{grid-template-columns:minmax(0,1fr);}
+  .cal-cell{min-height:50px;}
+  .cal-evt{font-size:6.5px;padding:1px 3px;}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- ==================== 侧边栏 ==================== -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">L</div>
+      <div>
+        <div class="brand-name">生活台</div>
+        <div class="brand-sub">LIFE CONSOLE</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <div class="nav-item active" data-view="dashboard"><span class="nav-dot"></span>首页</div>
+      <div class="nav-item" data-view="health"><span class="nav-dot"></span>健康</div>
+      <div class="nav-item" data-view="wealth"><span class="nav-dot"></span>财富</div>
+      <div class="nav-item" data-view="work"><span class="nav-dot"></span>工作</div>
+      <div class="nav-item" data-view="life"><span class="nav-dot"></span>生活</div>
+      <div class="nav-item" data-view="notes"><span class="nav-dot"></span>笔记</div>
+    </nav>
+
+    <div class="nav-foot">
+      <div class="nav-item" data-view="settings"><span class="nav-dot"></span>设置</div>
+      <div class="side-note">数据更新于 06-12 08:30</div>
+    </div>
+  </aside>
+
+  <!-- ==================== 主内容 ==================== -->
+  <main class="main">
+
+    <!-- ==================== 首页 ==================== -->
+    <section class="view active" data-view="dashboard">
+      <div class="view-head">
+        <div>
+          <h1>首页</h1>
+          <p>2025 年 6 月 12 日 · 星期四 · 晴 26°</p>
+        </div>
+        <div class="head-tag">本周第 4 天</div>
+      </div>
+
+      <div class="stack">
+
+        <!-- Hero -->
+        <div class="hero-banner">
+          <div>
+            <div class="hero-hello">早安，Lin</div>
+            <div class="hero-quote">今天也慢慢来，把最重要的那件事先做完。</div>
+            <div class="hero-meta">
+              <span class="chip">已连续记录 128 天</span>
+              <span class="chip">本周完成度 72%</span>
+              <span class="chip">目标 2025</span>
+            </div>
+          </div>
+          <div class="hero-side">
+            <div class="hero-date">06 / 12</div>
+            <div class="hero-wd">星期四 · 六月</div>
+          </div>
+        </div>
+
+        <!-- Metric Grid -->
+        <div class="grid g4">
+          <div class="card metric">
+            <div class="metric-label">睡眠</div>
+            <div class="metric-value">7<span class="u">h</span>32<span class="u">m</span></div>
+            <div class="metric-foot"><span class="up">+0.4h</span> 较上周</div>
+          </div>
+          <div class="card metric">
+            <div class="metric-label">本月支出</div>
+            <div class="metric-value">¥8,426</div>
+            <div class="metric-foot"><span class="up">-12.8%</span> 较上月</div>
+          </div>
+          <div class="card metric">
+            <div class="metric-label">今日步数</div>
+            <div class="metric-value">8,420</div>
+            <div class="metric-foot">目标 10,000 · 84%</div>
+          </div>
+          <div class="card metric">
+            <div class="metric-label">连续记录</div>
+            <div class="metric-value">128<span class="u">天</span></div>
+            <div class="metric-foot"><span class="up">+1</span> 今日已记录</div>
+          </div>
+        </div>
+
+        <!-- 今年的小目标（纵向） -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">今年的小目标</div>
+            <div class="card-sub">2025 · 已完成 1 项</div>
+          </div>
+          <div class="goal-vert">
+            <div class="goal-row">
+              <span class="goal-name">读书</span>
+              <div class="bar"><i style="width:50%"></i></div>
+              <span class="goal-num">12 / 24<em>50%</em></span>
+            </div>
+            <div class="goal-row">
+              <span class="goal-name">跑步</span>
+              <div class="bar"><i style="width:45%;background:var(--blue)"></i></div>
+              <span class="goal-num">268 / 600 km<em>45%</em></span>
+            </div>
+            <div class="goal-row">
+              <span class="goal-name">储蓄</span>
+              <div class="bar"><i style="width:39%;background:var(--yellow)"></i></div>
+              <span class="goal-num">¥19,300 / ¥50,000<em>39%</em></span>
+            </div>
+            <div class="goal-row">
+              <span class="goal-name">旅行</span>
+              <div class="bar"><i style="width:50%;background:var(--pink)"></i></div>
+              <span class="goal-num">2 / 4 次<em>50%</em></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 最近状态 -->
+        <div class="grid g13">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">收支趋势</div>
+                <div class="card-sub">近 6 个月 · 单位 ¥</div>
+              </div>
+              <div class="legend">
+                <span class="lg"><i style="background:var(--green)"></i>收入</span>
+                <span class="lg"><i style="background:var(--pink)"></i>支出</span>
+              </div>
+            </div>
+            <div class="chart" id="c-dash-cash"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">今天要做</div>
+              <div class="card-sub">3 / 7 已完成</div>
+            </div>
+            <div class="tasks">
+              <div class="task done">
+                <div class="task-check done"></div>
+                <div class="task-text">提交本周周报</div>
+                <span class="pill high">高</span>
+              </div>
+              <div class="task done">
+                <div class="task-check done"></div>
+                <div class="task-text">晨跑 5km</div>
+                <span class="pill mid">中</span>
+              </div>
+              <div class="task done">
+                <div class="task-check done"></div>
+                <div class="task-text">回复 3 封邮件</div>
+                <span class="pill low">低</span>
+              </div>
+              <div class="task">
+                <div class="task-check"></div>
+                <div class="task-text">写 Q2 产品复盘文档</div>
+                <span class="pill high">高</span>
+              </div>
+              <div class="task">
+                <div class="task-check"></div>
+                <div class="task-text">和设计对齐新版本交互稿</div>
+                <span class="pill mid">中</span>
+              </div>
+              <div class="task">
+                <div class="task-check"></div>
+                <div class="task-text">整理桌面文件夹</div>
+                <span class="pill low">低</span>
+              </div>
+              <div class="task">
+                <div class="task-check"></div>
+                <div class="task-text">读《慢思考》20 页</div>
+                <span class="pill low">低</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 生活切片 -->
+        <div class="grid g3">
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">支出结构</div>
+                <div class="card-sub">本月 · ¥8,426</div>
+              </div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">餐饮</span><span class="prow-val">¥2,860</span></div>
+              <div class="bar"><i style="width:100%"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">购物</span><span class="prow-val">¥1,420</span></div>
+              <div class="bar"><i style="width:50%;background:var(--yellow)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">交通</span><span class="prow-val">¥1,320</span></div>
+              <div class="bar"><i style="width:46%;background:var(--blue)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">娱乐</span><span class="prow-val">¥966</span></div>
+              <div class="bar"><i style="width:34%;background:var(--pink)"></i></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">阅读 / 观影进度</div>
+              <div class="card-sub">正在进行</div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《慢思考》</span><span class="prow-val">62%</span></div>
+              <div class="bar"><i style="width:62%"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《置身事内》</span><span class="prow-val">28%</span></div>
+              <div class="bar"><i style="width:28%;background:var(--blue)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《重启人生》</span><span class="prow-val">4 / 10 集</span></div>
+              <div class="bar"><i style="width:40%;background:var(--pink)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《宇宙时空之旅》</span><span class="prow-val">2 / 13 集</span></div>
+              <div class="bar"><i style="width:15%;background:var(--yellow)"></i></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">最近笔记</div>
+              <div class="card-sub">按修改时间</div>
+            </div>
+            <div class="list">
+              <div class="list-row">
+                <div class="list-main">
+                  <div class="list-title">《慢思考》读书笔记</div>
+                  <div class="list-sub">#读书 · 2 小时前</div>
+                </div>
+              </div>
+              <div class="list-row">
+                <div class="list-main">
+                  <div class="list-title">关于「生活台」的信息架构</div>
+                  <div class="list-sub">#产品 · 昨天</div>
+                </div>
+              </div>
+              <div class="list-row">
+                <div class="list-main">
+                  <div class="list-title">六月的三件小事</div>
+                  <div class="list-sub">#生活 · 2 天前</div>
+                </div>
+              </div>
+              <div class="list-row">
+                <div class="list-main">
+                  <div class="list-title">月度预算复盘</div>
+                  <div class="list-sub">#财务 · 3 天前</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== 健康 ==================== -->
+    <section class="view" data-view="health">
+      <div class="view-head">
+        <div>
+          <h1>健康</h1>
+          <p>身体是一切的地基 · 本周数据已同步</p>
+        </div>
+        <div class="head-tag">本周达标 5 / 7 天</div>
+      </div>
+
+      <div class="stack">
+
+        <div class="hero">
+          <div class="hero-card">
+            <div class="hero-hello">今天的状态不错</div>
+            <div class="hero-quote">昨晚睡了 7 小时 32 分，深睡比例 23%。今天适合做一次轻度有氧。</div>
+            <div class="hero-meta">
+              <span class="chip">睡眠 7h32m</span>
+              <span class="chip">步数 8,420</span>
+              <span class="chip">体重 57.4kg</span>
+            </div>
+          </div>
+          <div class="hero-mini">
+            <div class="mini-card">
+              <div class="mini-label">今日睡眠</div>
+              <div class="mini-value">7<span>h</span>32<span>m</span></div>
+              <div class="bar sm"><i style="width:82%;background:var(--blue)"></i></div>
+            </div>
+            <div class="mini-card">
+              <div class="mini-label">今日步数</div>
+              <div class="mini-value">8,420</div>
+              <div class="bar sm"><i style="width:70%"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid g13">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">本周睡眠趋势</div>
+                <div class="card-sub">深睡 / 浅睡 / REM · 单位 小时</div>
+              </div>
+              <div class="legend">
+                <span class="lg"><i style="background:#3e9a7c"></i>深睡</span>
+                <span class="lg"><i style="background:#78a9dc"></i>浅睡</span>
+                <span class="lg"><i style="background:#a9cbe8"></i>REM</span>
+              </div>
+            </div>
+            <div class="chart" id="c-sleep"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">本月运动时长</div>
+                <div class="card-sub">按周统计 · 单位 小时</div>
+              </div>
+              <div class="legend">
+                <span class="lg"><i style="background:var(--green)"></i>跑步</span>
+                <span class="lg"><i style="background:var(--blue)"></i>骑行</span>
+                <span class="lg"><i style="background:var(--yellow)"></i>健身</span>
+                <span class="lg"><i style="background:#cfd8d3"></i>其他</span>
+              </div>
+            </div>
+            <div class="chart" id="c-sport"></div>
+          </div>
+        </div>
+
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">体重曲线</div>
+                <div class="card-sub">近 6 次测量 · 单位 kg</div>
+              </div>
+            </div>
+            <div class="chart" id="c-weight"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">最近睡眠记录</div>
+              <div class="card-sub">近 4 天</div>
+            </div>
+            <div class="list">
+              <div class="list-row">
+                <div class="list-main">
+                  <div class="list-title">06-12 · 23:40 入睡</div>
+                  <div class="list-sub">时长 7h32m · 深睡 1.7h</div>
+                </div>
+                <span class="pill low">良好</span>
+              </div>
+              <div class="list-row">
+                <div class="list-main">
+                  <div class="list-title">06-11 · 00:10 入睡</div>
+                  <div class="list-sub">时长 6h05m · 深睡 1.4h</div>
+                </div>
+                <span class="pill mid">一般</span>
+              </div>
+              <div class="list-row">
+                <div class="list-main">
+                  <div class="list-title">06-10 · 23:20 入睡</div>
+                  <div class="list-sub">时长 7h48m · 深睡 2.0h</div>
+                </div>
+                <span class="pill low">优秀</span>
+              </div>
+              <div class="list-row">
+                <div class="list-main">
+                  <div class="list-title">06-09 · 23:55 入睡</div>
+                  <div class="list-sub">时长 6h40m · 深睡 1.6h</div>
+                </div>
+                <span class="pill low">良好</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">习惯打卡</div>
+            <div class="card-sub">点击卡片即可打卡 / 取消</div>
+          </div>
+          <div class="habits">
+            <div class="habit done" data-habit>
+              <div class="habit-top">
+                <span class="habit-ico">💧</span>
+                <span class="habit-check"></span>
+              </div>
+              <div class="habit-name">喝水</div>
+              <div class="habit-val">6 / 8 杯</div>
+              <div class="bar sm"><i style="width:75%;background:var(--blue)"></i></div>
+            </div>
+            <div class="habit done" data-habit>
+              <div class="habit-top">
+                <span class="habit-ico">🧘</span>
+                <span class="habit-check"></span>
+              </div>
+              <div class="habit-name">冥想</div>
+              <div class="habit-val">15 / 20 分钟</div>
+              <div class="bar sm"><i style="width:75%"></i></div>
+            </div>
+            <div class="habit" data-habit>
+              <div class="habit-top">
+                <span class="habit-ico">🤸</span>
+                <span class="habit-check"></span>
+              </div>
+              <div class="habit-name">拉伸</div>
+              <div class="habit-val">1 / 2 次</div>
+              <div class="bar sm"><i style="width:50%;background:var(--yellow)"></i></div>
+            </div>
+            <div class="habit" data-habit>
+              <div class="habit-top">
+                <span class="habit-ico">🌙</span>
+                <span class="habit-check"></span>
+              </div>
+              <div class="habit-name">早睡</div>
+              <div class="habit-val">4 / 7 天</div>
+              <div class="bar sm"><i style="width:57%;background:var(--pink)"></i></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== 财富 ==================== -->
+    <section class="view" data-view="wealth">
+      <div class="view-head">
+        <div>
+          <h1>财富</h1>
+          <p>6 月记账 · 距月末还有 18 天</p>
+        </div>
+      </div>
+
+      <div class="stack">
+
+        <!-- 状态横幅 -->
+        <div class="page-banner">
+          <div class="pb-main">
+            <div class="pb-title">本月收支健康</div>
+            <div class="pb-desc">本月结余 ¥9,774，储蓄率 53.7%，预算使用 84%，整体节奏好于上个月。</div>
+          </div>
+          <div class="pb-chips">
+            <span class="chip">总资产 ¥220,780</span>
+            <span class="chip">结余 ¥9,774</span>
+            <span class="chip">储蓄率 53.7%</span>
+          </div>
+        </div>
+
+        <div class="grid g4">
+          <div class="card metric">
+            <div class="metric-label">总资产</div>
+            <div class="metric-value">¥220,780</div>
+            <div class="metric-foot"><span class="up">+¥6,420</span> 本月</div>
+          </div>
+          <div class="card metric">
+            <div class="metric-label">本月收入</div>
+            <div class="metric-value">¥18,200</div>
+            <div class="metric-foot">工资 + 副业</div>
+          </div>
+          <div class="card metric">
+            <div class="metric-label">本月支出</div>
+            <div class="metric-value">¥8,426</div>
+            <div class="metric-foot"><span class="up">-12.8%</span> 较上月</div>
+          </div>
+          <div class="card metric">
+            <div class="metric-label">本月结余</div>
+            <div class="metric-value">¥9,774</div>
+            <div class="metric-foot">储蓄率 53.7%</div>
+          </div>
+        </div>
+
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">本月收支对比</div>
+                <div class="card-sub">按周统计 · 单位 ¥</div>
+              </div>
+              <div class="legend">
+                <span class="lg"><i style="background:var(--green)"></i>收入</span>
+                <span class="lg"><i style="background:var(--pink)"></i>支出</span>
+              </div>
+            </div>
+            <div class="chart" id="c-month-cash"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">近 6 月支出趋势</div>
+                <div class="card-sub">单位 ¥</div>
+              </div>
+            </div>
+            <div class="chart" id="c-6m"></div>
+          </div>
+        </div>
+
+        <div class="grid g13">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">支出分类占比</div>
+                <div class="card-sub">本月 · ¥8,426</div>
+              </div>
+            </div>
+            <div class="chart" id="c-cat"></div>
+            <div class="legend" style="justify-content:center;margin-top:10px;gap:16px;">
+              <span class="lg"><i style="background:#55b99a"></i>餐饮</span>
+              <span class="lg"><i style="background:#f3c96a"></i>购物</span>
+              <span class="lg"><i style="background:#78a9dc"></i>交通</span>
+              <span class="lg"><i style="background:#e5a3b6"></i>娱乐</span>
+              <span class="lg"><i style="background:#cfd8d3"></i>其他</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">储蓄目标进度</div>
+              <div class="card-sub">2025 年度</div>
+            </div>
+            <div class="goal-vert">
+              <div class="goal-row" style="grid-template-columns:64px 1fr 104px;">
+                <span class="goal-name">年度</span>
+                <div class="bar"><i style="width:38.6%"></i></div>
+                <span class="goal-num">38.6%<em>¥19,300</em></span>
+              </div>
+              <div class="goal-row" style="grid-template-columns:64px 1fr 104px;">
+                <span class="goal-name">月度</span>
+                <div class="bar"><i style="width:76%;background:var(--yellow)"></i></div>
+                <span class="goal-num">76%<em>¥3,200</em></span>
+              </div>
+              <div class="goal-row" style="grid-template-columns:64px 1fr 104px;">
+                <span class="goal-name">连续</span>
+                <div class="bar"><i style="width:83%;background:var(--blue)"></i></div>
+                <span class="goal-num">5 个月<em>达标</em></span>
+              </div>
+            </div>
+            <div style="margin-top:10px;font-size:var(--fs-sm);color:var(--text-muted);line-height:1.7;">
+              年度目标 ¥50,000，还差 ¥30,700。
+            </div>
+          </div>
+        </div>
+
+        <div class="grid g13">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">最近交易</div>
+              <div class="card-sub">近 6 笔</div>
+            </div>
+            <div class="list">
+              <div class="list-row">
+                <span class="pill low" style="background:var(--green-soft);color:var(--green-deep)">餐饮</span>
+                <div class="list-main">
+                  <div class="list-title">午餐 · 公司楼下</div>
+                  <div class="list-sub">今天 12:30</div>
+                </div>
+                <div class="list-amt" style="color:var(--danger)">-¥38</div>
+              </div>
+              <div class="list-row">
+                <span class="pill blue">交通</span>
+                <div class="list-main">
+                  <div class="list-title">地铁通勤</div>
+                  <div class="list-sub">今天 08:45</div>
+                </div>
+                <div class="list-amt" style="color:var(--danger)">-¥6</div>
+              </div>
+              <div class="list-row">
+                <span class="pill low">收入</span>
+                <div class="list-main">
+                  <div class="list-title">工资入账</div>
+                  <div class="list-sub">06-10</div>
+                </div>
+                <div class="list-amt" style="color:var(--success)">+¥18,200</div>
+              </div>
+              <div class="list-row">
+                <span class="pill mid">购物</span>
+                <div class="list-main">
+                  <div class="list-title">独立书店 · 两本书</div>
+                  <div class="list-sub">06-09</div>
+                </div>
+                <div class="list-amt" style="color:var(--danger)">-¥128</div>
+              </div>
+              <div class="list-row">
+                <span class="pill low" style="background:var(--green-soft);color:var(--green-deep)">餐饮</span>
+                <div class="list-main">
+                  <div class="list-title">咖啡</div>
+                  <div class="list-sub">06-09</div>
+                </div>
+                <div class="list-amt" style="color:var(--danger)">-¥32</div>
+              </div>
+              <div class="list-row">
+                <span class="pill" style="background:var(--pink-soft);color:#c9748a">娱乐</span>
+                <div class="list-main">
+                  <div class="list-title">电影票</div>
+                  <div class="list-sub">06-08</div>
+                </div>
+                <div class="list-amt" style="color:var(--danger)">-¥68</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">预算使用情况</div>
+                <div class="card-sub">本月</div>
+              </div>
+              <span class="head-tag">预算使用 84%</span>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">餐饮</span><span class="prow-val">¥2,860 / ¥3,000</span></div>
+              <div class="bar"><i style="width:95%;background:var(--danger)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">购物</span><span class="prow-val">¥1,420 / ¥2,000</span></div>
+              <div class="bar"><i style="width:71%;background:var(--yellow)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">交通</span><span class="prow-val">¥1,320 / ¥1,500</span></div>
+              <div class="bar"><i style="width:88%;background:var(--yellow)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">娱乐</span><span class="prow-val">¥966 / ¥1,500</span></div>
+              <div class="bar"><i style="width:64%"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">其他</span><span class="prow-val">¥1,860 / ¥2,500</span></div>
+              <div class="bar"><i style="width:74%;background:var(--blue)"></i></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== 工作 ==================== -->
+    <section class="view" data-view="work">
+      <div class="view-head">
+        <div>
+          <h1>工作</h1>
+          <p>今天有 3 项高优先级任务 · 专注 4h20m</p>
+        </div>
+        <div class="head-tag">本周完成 18 项</div>
+      </div>
+
+      <div class="stack">
+
+        <!-- 状态横幅 -->
+        <div class="page-banner">
+          <div class="pb-main">
+            <div class="pb-title">今天节奏不错</div>
+            <div class="pb-desc">3 项高优先级任务，2 个 DDL 落在本周，项目整体推进顺利。上午适合先攻复盘文档。</div>
+          </div>
+          <div class="pb-chips">
+            <span class="chip">今日 3 高优</span>
+            <span class="chip">本周 2 DDL</span>
+            <span class="chip">专注 4h20m</span>
+          </div>
+        </div>
+
+        <!-- 日历 -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">六月日历</div>
+              <div class="card-sub">任务与 DDL 已标记 · 今天 6 月 12 日</div>
+            </div>
+            <div class="cal-legend">
+              <span class="lg"><i style="background:#e5a3b6"></i>高</span>
+              <span class="lg"><i style="background:#f3c96a"></i>中</span>
+              <span class="lg"><i style="background:#55b99a"></i>低</span>
+              <span class="lg"><i style="background:var(--danger)"></i>DDL</span>
+            </div>
+          </div>
+          <div class="calendar" id="work-calendar"></div>
+        </div>
+
+        <!-- 今日待办 + 右侧 -->
+        <div class="grid g13">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">今日待办</div>
+              <div class="card-sub">3 / 8 已完成</div>
+            </div>
+
+            <div style="font-size:var(--fs-sm);color:var(--text-muted);margin:2px 0 4px;">高优先级</div>
+            <div class="task">
+              <div class="task-check"></div>
+              <div class="task-text">写 Q2 产品复盘文档</div>
+              <span class="pill high">高</span>
+            </div>
+            <div class="task">
+              <div class="task-check"></div>
+              <div class="task-text">和设计对齐新版本交互稿</div>
+              <span class="pill high">高</span>
+            </div>
+            <div class="task done">
+              <div class="task-check done"></div>
+              <div class="task-text">提交本周周报</div>
+              <span class="pill high">高</span>
+            </div>
+
+            <div style="font-size:var(--fs-sm);color:var(--text-muted);margin:12px 0 4px;">中优先级</div>
+            <div class="task">
+              <div class="task-check"></div>
+              <div class="task-text">整理 6 份用户访谈记录</div>
+              <span class="pill mid">中</span>
+            </div>
+            <div class="task">
+              <div class="task-check"></div>
+              <div class="task-text">更新项目周报看板</div>
+              <span class="pill mid">中</span>
+            </div>
+
+            <div style="font-size:var(--fs-sm);color:var(--text-muted);margin:12px 0 4px;">低优先级</div>
+            <div class="task">
+              <div class="task-check"></div>
+              <div class="task-text">整理桌面文件夹</div>
+              <span class="pill low">低</span>
+            </div>
+            <div class="task">
+              <div class="task-check"></div>
+              <div class="task-text">看一集设计课</div>
+              <span class="pill low">低</span>
+            </div>
+            <div class="task done">
+              <div class="task-check done"></div>
+              <div class="task-text">回复 3 封邮件</div>
+              <span class="pill low">低</span>
+            </div>
+          </div>
+
+          <div class="stack" style="gap:14px;">
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">即将到期</div>
+                <div class="card-sub">未来 10 天</div>
+              </div>
+              <div class="list">
+                <div class="list-row">
+                  <div class="list-main">
+                    <div class="list-title">产品复盘文档</div>
+                    <div class="list-sub">今天 18:00</div>
+                  </div>
+                  <span class="pill high">高</span>
+                </div>
+                <div class="list-row">
+                  <div class="list-main">
+                    <div class="list-title">交互稿评审</div>
+                    <div class="list-sub">明天 10:00</div>
+                  </div>
+                  <span class="pill mid">中</span>
+                </div>
+                <div class="list-row">
+                  <div class="list-main">
+                    <div class="list-title">月度数据报告</div>
+                    <div class="list-sub">06-16</div>
+                  </div>
+                  <span class="pill mid">中</span>
+                </div>
+                <div class="list-row">
+                  <div class="list-main">
+                    <div class="list-title">季度 OKR 复盘</div>
+                    <div class="list-sub">06-20</div>
+                  </div>
+                  <span class="pill low">低</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head">
+                <div class="card-title">项目进度</div>
+                <div class="card-sub">进行中 3 个</div>
+              </div>
+              <div class="goal-vert">
+                <div class="goal-row">
+                  <span class="goal-name">「生活台」v2 改版</span>
+                  <div class="bar"><i style="width:68%"></i></div>
+                  <span class="goal-num">68%<em>交互稿</em></span>
+                </div>
+                <div class="goal-row">
+                  <span class="goal-name">用户增长实验</span>
+                  <div class="bar"><i style="width:42%;background:var(--blue)"></i></div>
+                  <span class="goal-num">42%<em>A/B 中</em></span>
+                </div>
+                <div class="goal-row">
+                  <span class="goal-name">知识库整理计划</span>
+                  <div class="bar"><i style="width:25%;background:var(--yellow)"></i></div>
+                  <span class="goal-num">25%<em>42/168</em></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== 生活（合并媒体） ==================== -->
+    <section class="view" data-view="life">
+      <div class="view-head">
+        <div>
+          <h1>生活与媒体</h1>
+          <p>6 月的第 12 天 · 慢一点也没关系</p>
+        </div>
+        <div class="head-tag">本月记录 30 条</div>
+      </div>
+
+      <div class="stack">
+
+        <!-- 状态横幅 -->
+        <div class="page-banner">
+          <div class="pb-main">
+            <div class="pb-title">六月过得挺充实</div>
+            <div class="pb-desc">30 次活动，读了 6 本书，看了 8 部影视。运动和独处占了大多数，节奏刚刚好。</div>
+          </div>
+          <div class="pb-chips">
+            <span class="chip">运动 12 次</span>
+            <span class="chip">阅读 6 本</span>
+            <span class="chip">观影 8 部</span>
+          </div>
+        </div>
+
+        <!-- 指标卡 -->
+        <div class="grid g4">
+          <div class="card metric">
+            <div class="metric-label">本周游戏时长</div>
+            <div class="metric-value">6.5<span class="u">h</span></div>
+            <div class="metric-foot"><span class="up">+1.2h</span> 较上周</div>
+          </div>
+          <div class="card metric">
+            <div class="metric-label">本月观影数量</div>
+            <div class="metric-value">8<span class="u">部</span></div>
+            <div class="metric-foot">电影 5 · 剧集 3</div>
+          </div>
+          <div class="card metric">
+            <div class="metric-label">本月阅读数量</div>
+            <div class="metric-value">6<span class="u">本</span></div>
+            <div class="metric-foot">已读完 2 本</div>
+          </div>
+          <div class="card metric">
+            <div class="metric-label">本月活动次数</div>
+            <div class="metric-value">30<span class="u">次</span></div>
+            <div class="metric-foot">运动 12 · 独处 9</div>
+          </div>
+        </div>
+
+        <!-- 两张环形图 -->
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">月度活动分布</div>
+                <div class="card-sub">本月 · 共 30 次</div>
+              </div>
+            </div>
+            <div class="chart" id="c-life"></div>
+            <div class="legend" style="justify-content:center;margin-top:10px;gap:16px;">
+              <span class="lg"><i style="background:#55b99a"></i>运动 12</span>
+              <span class="lg"><i style="background:#78a9dc"></i>独处 9</span>
+              <span class="lg"><i style="background:#f3c96a"></i>聚餐 6</span>
+              <span class="lg"><i style="background:#e5a3b6"></i>旅行 3</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">内容类型占比</div>
+                <div class="card-sub">本月 · 共 26 部</div>
+              </div>
+            </div>
+            <div class="chart" id="c-media"></div>
+            <div class="legend" style="justify-content:center;margin-top:10px;gap:16px;">
+              <span class="lg"><i style="background:#55b99a"></i>电影 32%</span>
+              <span class="lg"><i style="background:#78a9dc"></i>剧集 28%</span>
+              <span class="lg"><i style="background:#f3c96a"></i>纪录片 22%</span>
+              <span class="lg"><i style="background:#e5a3b6"></i>动画 18%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 阅读进度 & 观影进度 -->
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">阅读进度</div>
+              <div class="card-sub">正在读 · 4 本</div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《慢思考》</span><span class="prow-val">62%</span></div>
+              <div class="bar"><i style="width:62%"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《置身事内》</span><span class="prow-val">28%</span></div>
+              <div class="bar"><i style="width:28%;background:var(--blue)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《人类简史》</span><span class="prow-val">12%</span></div>
+              <div class="bar"><i style="width:12%;background:var(--yellow)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《小径分岔的花园》</span><span class="prow-val">100%</span></div>
+              <div class="bar"><i style="width:100%;background:var(--pink)"></i></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">观影进度</div>
+              <div class="card-sub">正在看 · 4 部</div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《重启人生》</span><span class="prow-val">4 / 10 集</span></div>
+              <div class="bar"><i style="width:40%;background:var(--pink)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《宇宙时空之旅》</span><span class="prow-val">2 / 13 集</span></div>
+              <div class="bar"><i style="width:15%;background:var(--yellow)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《漫长的季节》</span><span class="prow-val">6 / 12 集</span></div>
+              <div class="bar"><i style="width:50%;background:var(--blue)"></i></div>
+            </div>
+            <div class="prow">
+              <div class="prow-top"><span class="prow-name">《小森林》</span><span class="prow-val">100%</span></div>
+              <div class="bar"><i style="width:100%"></i></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 最近完播 / 读完 -->
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">最近完播 / 读完</div>
+            <div class="card-sub">近 6 部</div>
+          </div>
+          <div class="list-cols">
+            <div class="list">
+              <div class="list-row">
+                <span class="pill low">电影</span>
+                <div class="list-main">
+                  <div class="list-title">《小森林》</div>
+                  <div class="list-sub">06-11 · 夏秋篇</div>
+                </div>
+                <div class="list-amt" style="color:var(--warn)">★★★★☆</div>
+              </div>
+              <div class="list-row">
+                <span class="pill blue">剧集</span>
+                <div class="list-main">
+                  <div class="list-title">《重启人生》</div>
+                  <div class="list-sub">06-08 · 第 4 集</div>
+                </div>
+                <div class="list-amt" style="color:var(--warn)">★★★★★</div>
+              </div>
+              <div class="list-row">
+                <span class="pill mid">纪录片</span>
+                <div class="list-main">
+                  <div class="list-title">《宇宙时空之旅》</div>
+                  <div class="list-sub">06-05 · 第 2 集</div>
+                </div>
+                <div class="list-amt" style="color:var(--warn)">★★★★☆</div>
+              </div>
+            </div>
+            <div class="list">
+              <div class="list-row">
+                <span class="pill" style="background:var(--pink-soft);color:#c9748a">图书</span>
+                <div class="list-main">
+                  <div class="list-title">《百年孤独》</div>
+                  <div class="list-sub">06-02 · 已读完</div>
+                </div>
+                <div class="list-amt" style="color:var(--warn)">★★★★☆</div>
+              </div>
+              <div class="list-row">
+                <span class="pill" style="background:var(--pink-soft);color:#c9748a">图书</span>
+                <div class="list-main">
+                  <div class="list-title">《小径分岔的花园》</div>
+                  <div class="list-sub">05-30 · 已读完</div>
+                </div>
+                <div class="list-amt" style="color:var(--warn)">★★★★★</div>
+              </div>
+              <div class="list-row">
+                <span class="pill low">电影</span>
+                <div class="list-main">
+                  <div class="list-title">《海街日记》</div>
+                  <div class="list-sub">05-28</div>
+                </div>
+                <div class="list-amt" style="color:var(--warn)">★★★★☆</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== 笔记 ==================== -->
+    <section class="view" data-view="notes">
+      <div class="view-head">
+        <div>
+          <h1>笔记</h1>
+          <p>428 篇 · Obsidian 同步正常</p>
+        </div>
+        <div class="head-tag">最后同步 08:30</div>
+      </div>
+
+      <div class="stack">
+
+        <!-- 状态横幅 -->
+        <div class="page-banner">
+          <div class="pb-main">
+            <div class="pb-title">本月写作状态不错</div>
+            <div class="pb-desc">新增 26 篇笔记，本周编辑 9 篇，标签覆盖 24 个。读书笔记与产品思考是本月的主线。</div>
+          </div>
+          <div class="pb-chips">
+            <span class="chip">总量 428 篇</span>
+            <span class="chip">本月 +26</span>
+            <span class="chip">本周 9 篇</span>
+          </div>
+        </div>
+
+        <!-- 紧凑指标行 -->
+        <div class="metric-row">
+          <div class="metric-slim">
+            <span class="ms-label">笔记总量</span>
+            <span class="ms-value">428<span>篇</span></span>
+          </div>
+          <div class="metric-slim">
+            <span class="ms-label">本月新增</span>
+            <span class="ms-value">26<span>篇</span></span>
+          </div>
+          <div class="metric-slim">
+            <span class="ms-label">标签数</span>
+            <span class="ms-value">24<span>个</span></span>
+          </div>
+          <div class="metric-slim">
+            <span class="ms-label">本周编辑</span>
+            <span class="ms-value">9<span>篇</span></span>
+          </div>
+        </div>
+
+        <!-- 三栏 -->
+        <div class="notes-layout">
+
+          <div class="card tree-card">
+            <div class="card-head" style="margin-bottom:8px;">
+              <div class="card-title" style="font-size:var(--fs-base);">目录</div>
+            </div>
+            <div class="tree">
+              <div class="tree-item"><span>📥</span>00 Inbox<span class="cnt">12</span></div>
+              <div class="tree-item on"><span>📝</span>10 Notes<span class="cnt">212</span></div>
+              <div class="tree-item tree-child"><span>📖</span>读书笔记<span class="cnt">86</span></div>
+              <div class="tree-item tree-child"><span>💡</span>产品思考<span class="cnt">54</span></div>
+              <div class="tree-item tree-child"><span>🌿</span>生活记录<span class="cnt">72</span></div>
+              <div class="tree-item"><span>🚀</span>20 Projects<span class="cnt">34</span></div>
+              <div class="tree-item"><span>🗄️</span>30 Archive<span class="cnt">170</span></div>
+            </div>
+          </div>
+
+          <div class="card preview-card">
+            <div class="preview-head">
+              <div class="preview-title" id="pv-title">《慢思考》读书笔记</div>
+              <div class="preview-meta">
+                <span class="pill low" id="pv-tag">#读书</span>
+                <span class="preview-time" id="pv-time">2 小时前 · 1,240 字</span>
+              </div>
+            </div>
+            <div class="preview-body" id="pv-body">
+              <p>注意力不是无限资源，而是一种需要被保护的稀缺品。这一章讲「专注的节奏」，作者把一天分成三种状态：深度工作、浅层处理、恢复。</p>
+              <h4>关键提醒</h4>
+              <p>不要把「休息」当成偷懒，它是下一段专注的入场券。试着把手机放在另一个房间，只用纸笔记录当天最重要的三件事。</p>
+              <p>读到这里时，我想到自己每天下午三点的疲惫，也许不是需要咖啡，而是需要一次真正的空白。</p>
+              <p>另外，作者在书里反复提到「单任务」的价值。我们总觉得同时处理多件事是效率，其实每一次切换都在悄悄消耗注意力。真正高效的，往往是把一件事做到彻底，然后安心离开。</p>
+              <p>这一点放在写作上也成立：与其开五个文档各写一半，不如先把一篇写完。</p>
+            </div>
+            <div class="preview-foot">
+              <span class="pill low">#读书</span>
+              <span class="pill blue">#认知</span>
+              <span class="pill mid">#2025</span>
+            </div>
+          </div>
+
+          <div class="side-col">
+
+            <div class="card">
+              <div class="card-head" style="margin-bottom:6px;">
+                <div class="card-title" style="font-size:var(--fs-base);">最近笔记</div>
+              </div>
+              <div class="list" id="note-list">
+                <div class="list-row click on" data-note="n1">
+                  <div class="list-main">
+                    <div class="list-title">《慢思考》读书笔记</div>
+                    <div class="list-sub">#读书 · 2 小时前</div>
+                  </div>
+                </div>
+                <div class="list-row click" data-note="n2">
+                  <div class="list-main">
+                    <div class="list-title">关于「生活台」的信息架构</div>
+                    <div class="list-sub">#产品 · 昨天</div>
+                  </div>
+                </div>
+                <div class="list-row click" data-note="n3">
+                  <div class="list-main">
+                    <div class="list-title">六月的三件小事</div>
+                    <div class="list-sub">#生活 · 2 天前</div>
+                  </div>
+                </div>
+                <div class="list-row click" data-note="n4">
+                  <div class="list-main">
+                    <div class="list-title">月度预算复盘</div>
+                    <div class="list-sub">#财务 · 3 天前</div>
+                  </div>
+                </div>
+                <div class="list-row click" data-note="n5">
+                  <div class="list-main">
+                    <div class="list-title">跑步训练计划调整</div>
+                    <div class="list-sub">#健康 · 5 天前</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-head" style="margin-bottom:8px;">
+                <div class="card-title" style="font-size:var(--fs-base);">标签分布</div>
+                <div class="card-sub" style="font-size:var(--fs-xs);">Top 8</div>
+              </div>
+              <div class="tagbars">
+                <div class="tagbar"><span class="tag-name">读书</span><div class="bar"><i style="width:100%"></i></div><span class="tag-cnt">42</span></div>
+                <div class="tagbar"><span class="tag-name">产品</span><div class="bar"><i style="width:86%;background:var(--blue)"></i></div><span class="tag-cnt">36</span></div>
+                <div class="tagbar"><span class="tag-name">生活</span><div class="bar"><i style="width:71%;background:var(--yellow)"></i></div><span class="tag-cnt">30</span></div>
+                <div class="tagbar"><span class="tag-name">灵感</span><div class="bar"><i style="width:62%;background:var(--pink)"></i></div><span class="tag-cnt">26</span></div>
+                <div class="tagbar"><span class="tag-name">健康</span><div class="bar"><i style="width:52%"></i></div><span class="tag-cnt">22</span></div>
+                <div class="tagbar"><span class="tag-name">财务</span><div class="bar"><i style="width:43%;background:var(--blue)"></i></div><span class="tag-cnt">18</span></div>
+                <div class="tagbar"><span class="tag-name">旅行</span><div class="bar"><i style="width:33%;background:var(--yellow)"></i></div><span class="tag-cnt">14</span></div>
+                <div class="tagbar"><span class="tag-name">影评</span><div class="bar"><i style="width:26%;background:var(--pink)"></i></div><span class="tag-cnt">11</span></div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== 设置 ==================== -->
+    <section class="view" data-view="settings">
+      <div class="view-head">
+        <div>
+          <h1>设置</h1>
+          <p>偏好与数据源</p>
+        </div>
+        <div class="head-tag">v0.4.2</div>
+      </div>
+
+      <div class="stack">
+
+        <!-- 状态横幅 -->
+        <div class="page-banner">
+          <div class="pb-main">
+            <div class="pb-title">一切正常</div>
+            <div class="pb-desc">数据源暂未接入，主题为亮色，所有信息已同步至本地。可以按需配置财务、健康与笔记数据源。</div>
+          </div>
+          <div class="pb-chips">
+            <span class="chip">版本 v0.4.2</span>
+            <span class="chip">亮色主题</span>
+            <span class="chip">本地存储</span>
+          </div>
+        </div>
+
+        <div class="grid g2">
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">个人信息</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+              <div class="avatar">L</div>
+              <div>
+                <div style="font-size:var(--fs-lg);font-weight:600;">Lin</div>
+                <div style="font-size:var(--fs-sm);color:var(--text-muted);">已使用 128 天</div>
+              </div>
+            </div>
+            <div class="field">
+              <label>昵称</label>
+              <input class="input" value="Lin" />
+            </div>
+            <div class="field">
+              <label>目标年份</label>
+              <input class="input" value="2025" />
+            </div>
+            <div class="field">
+              <label>一句话签名</label>
+              <input class="input" value="慢慢来，比较快。" />
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <div class="card-title">主题偏好</div>
+              <div class="card-sub">当前仅实现亮色</div>
+            </div>
+            <div class="opt-row" style="margin-bottom:16px;">
+              <div class="opt on">亮色</div>
+              <div class="opt">暗色</div>
+              <div class="opt">跟随系统</div>
+            </div>
+
+            <div class="card-head" style="margin-top:6px;">
+              <div class="card-title">关于</div>
+            </div>
+            <div class="about-line"><span>版本号</span><span>v0.4.2</span></div>
+            <div class="about-line"><span>技术栈</span><span>HTML / CSS / SVG</span></div>
+            <div class="about-line"><span>图表</span><span>自绘 SVG（无动效）</span></div>
+            <div class="about-line"><span>最后更新</span><span>2025-06-12</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">数据源配置</div>
+            <div class="card-sub">占位 · 暂未接入</div>
+          </div>
+          <div class="src">
+            <div class="src-ico" style="background:var(--green-soft);color:var(--green-deep)">¥</div>
+            <div class="src-main">
+              <div class="src-name">财务 API</div>
+              <div class="src-desc">用于同步账单与账户余额，需配置授权 Token</div>
+            </div>
+            <span class="pill low">未连接</span>
+          </div>
+          <div class="src">
+            <div class="src-ico" style="background:var(--blue-soft);color:#5b8fc4">♥</div>
+            <div class="src-main">
+              <div class="src-name">健康 API</div>
+              <div class="src-desc">同步睡眠、步数、运动与体重数据</div>
+            </div>
+            <span class="pill low">未连接</span>
+          </div>
+          <div class="src">
+            <div class="src-ico" style="background:var(--yellow-soft);color:#b98b2e">✎</div>
+            <div class="src-main">
+              <div class="src-name">Obsidian 路径</div>
+              <div class="src-desc">本地 Vault 目录：~/Documents/Obsidian/Life</div>
+            </div>
+            <span class="pill low">只读</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ==================== 悬浮提示 ==================== -->
+<div class="chart-tip" id="tip"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  var NS = 'http://www.w3.org/2000/svg';
+  var GRID = '#edf1ef';
+  var AXIS = '#a3ada8';
+
+  /* ---------------- 基础工具 ---------------- */
+  function el(tag, attrs){
+    var n = document.createElementNS(NS, tag);
+    if(attrs){ for(var k in attrs){ n.setAttribute(k, attrs[k]); } }
+    return n;
+  }
+
+  function niceMax(v){
+    if(v <= 0) return 1;
+    var steps = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
+    var exp = Math.pow(10, Math.floor(Math.log10(v)));
+    var f = v / exp;
+    for(var i = 0; i < steps.length; i++){
+      if(f <= steps[i] + 1e-9) return steps[i] * exp;
+    }
+    return 10 * exp;
+  }
+
+  function kFmt(v){
+    if(v === 0) return '0';
+    if(Math.abs(v) >= 1000){
+      var n = v / 1000;
+      return (Math.abs(n - Math.round(n)) < 1e-9 ? n : n.toFixed(1)) + 'k';
+    }
+    return Math.abs(v - Math.round(v)) < 1e-9 ? String(Math.round(v)) : v.toFixed(1);
+  }
+
+  function fmtInt(v){ return String(Math.round(v)); }
+
+  /* ---------------- Tooltip ---------------- */
+  var tipEl = document.getElementById('tip');
+  function showTip(html, x, y){
+    tipEl.innerHTML = html;
+    tipEl.classList.add('on');
+    var r = tipEl.getBoundingClientRect();
+    var left = x + 14, top = y - r.height - 10;
+    if(left + r.width > window.innerWidth - 10) left = x - r.width - 14;
+    if(top < 8) top = y + 18;
+    tipEl.style.left = left + 'px';
+    tipEl.style.top = top + 'px';
+  }
+  function hideTip(){ tipEl.classList.remove('on'); }
+
+  function bindTip(node, htmlFn){
+    node.setAttribute('pointer-events', 'all');
+    node.style.cursor = 'pointer';
+    node.addEventListener('mousemove', function(e){
+      showTip(htmlFn(), e.clientX, e.clientY);
+    });
+    node.addEventListener('mouseleave', hideTip);
+  }
+
+  function tipHtml(name, label, value, color){
+    return '<span class="tip-dot" style="background:' + color + '"></span>'
+      + name + (label ? ' · ' + label : '') + '<b>' + value + '</b>';
+  }
+
+  /* ---------------- 折线图 ---------------- */
+  function drawLine(container, opts){
+    if(!container) return;
+    container.innerHTML = '';
+    var labels = opts.labels, series = opts.series;
+    var h = opts.height || 170;
+    var yFmt = opts.yFmt || fmtInt;
+    var w = Math.max(container.clientWidth || 400, 260);
+    var padL = 40, padR = 12, padT = 14, padB = 22;
+    var iw = w - padL - padR, ih = h - padT - padB;
+    var n = labels.length;
+
+    var minV = (opts.yMin !== undefined) ? opts.yMin : 0;
+    var maxRaw = 1;
+    series.forEach(function(s){ s.data.forEach(function(v){ if(v > maxRaw) maxRaw = v; }); });
+    var maxV = (opts.yMax !== undefined) ? opts.yMax : niceMax(maxRaw);
+    if(maxV <= minV) maxV = minV + 1;
+
+    var X = function(i){ return n === 1 ? padL + iw / 2 : padL + iw * i / (n - 1); };
+    var Y = function(v){ return padT + ih - ((v - minV) / (maxV - minV)) * ih; };
+
+    var svg = el('svg', { width: w, height: h, 'class': 'chart-svg' });
+
+    var ticks = opts.gridN || 5;
+    for(var t = 0; t <= ticks; t++){
+      var val = minV + (maxV - minV) * t / ticks;
+      var y = Y(val);
+      svg.appendChild(el('line', {
+        x1: padL, x2: w - padR, y1: y, y2: y, stroke: GRID, 'stroke-width': 1
+      }));
+      var txt = el('text', {
+        x: padL - 8, y: y + 3, 'text-anchor': 'end',
+        'font-size': 9, fill: AXIS
+      });
+      txt.textContent = yFmt(val);
+      svg.appendChild(txt);
+    }
+
+    labels.forEach(function(lb, i){
+      var t2 = el('text', {
+        x: X(i), y: h - 6, 'text-anchor': 'middle',
+        'font-size': 9, fill: AXIS
+      });
+      t2.textContent = lb;
+      svg.appendChild(t2);
+    });
+
+    series.forEach(function(s){
+      var pts = s.data.map(function(v, i){ return [X(i), Y(v)]; });
+      var line = pts.map(function(p, i){
+        return (i === 0 ? 'M' : 'L') + p[0] + ' ' + p[1];
+      }).join(' ');
+
+      if(opts.area !== false){
+        var base = Y(minV);
+        var d = line + ' L ' + X(n - 1) + ' ' + base + ' L ' + X(0) + ' ' + base + ' Z';
+        svg.appendChild(el('path', {
+          d: d, fill: s.color, 'fill-opacity': 0.10, stroke: 'none'
+        }));
+      }
+
+      svg.appendChild(el('path', {
+        d: line, fill: 'none', stroke: s.color,
+        'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round'
+      }));
+
+      pts.forEach(function(p, i){
+        svg.appendChild(el('circle', {
+          cx: p[0], cy: p[1], r: 3,
+          fill: '#fff', stroke: s.color, 'stroke-width': 2
+        }));
+        var hit = el('circle', { cx: p[0], cy: p[1], r: 13, fill: 'transparent' });
+        bindTip(hit, (function(idx){
+          return function(){
+            return tipHtml(s.name, labels[idx], (opts.valueFmt || yFmt)(s.data[idx]), s.color);
+          };
+        })(i));
+        svg.appendChild(hit);
+      });
+    });
+
+    container.appendChild(svg);
+  }
+
+  /* ---------------- 堆叠面积图 ---------------- */
+  function drawStackArea(container, opts){
+    if(!container) return;
+    container.innerHTML = '';
+    var labels = opts.labels, series = opts.series;
+    var h = opts.height || 180;
+    var yFmt = opts.yFmt || fmtInt;
+    var w = Math.max(container.clientWidth || 400, 260);
+    var padL = 36, padR = 12, padT = 14, padB = 22;
+    var iw = w - padL - padR, ih = h - padT - padB;
+    var n = labels.length;
+
+    var totals = labels.map(function(_, i){
+      var s = 0;
+      series.forEach(function(se){ s += se.data[i]; });
+      return s;
+    });
+    var maxV = niceMax(Math.max.apply(null, totals.concat([1])));
+
+    var X = function(i){ return n === 1 ? padL + iw / 2 : padL + iw * i / (n - 1); };
+    var Y = function(v){ return padT + ih - (v / maxV) * ih; };
+
+    var svg = el('svg', { width: w, height: h, 'class': 'chart-svg' });
+
+    for(var t = 0; t <= 5; t++){
+      var val = maxV * t / 5, y = Y(val);
+      svg.appendChild(el('line', {
+        x1: padL, x2: w - padR, y1: y, y2: y, stroke: GRID, 'stroke-width': 1
+      }));
+      var tx = el('text', {
+        x: padL - 8, y: y + 3, 'text-anchor': 'end', 'font-size': 9, fill: AXIS
+      });
+      tx.textContent = yFmt(val);
+      svg.appendChild(tx);
+    }
+
+    labels.forEach(function(lb, i){
+      var t2 = el('text', {
+        x: X(i), y: h - 6, 'text-anchor': 'middle', 'font-size': 9, fill: AXIS
+      });
+      t2.textContent = lb;
+      svg.appendChild(t2);
+    });
+
+    var cum = labels.map(function(){ return 0; });
+    series.forEach(function(s){
+      var lower = cum.slice();
+      var upper = s.data.map(function(v, i){ return lower[i] + v; });
+      cum = upper;
+
+      var top = upper.map(function(v, i){
+        return (i === 0 ? 'M' : 'L') + X(i) + ' ' + Y(v);
+      }).join(' ');
+      var bot = '';
+      for(var i = n - 1; i >= 0; i--){
+        bot += ' L ' + X(i) + ' ' + Y(lower[i]);
+      }
+      svg.appendChild(el('path', {
+        d: top + bot + ' Z',
+        fill: s.color, 'fill-opacity': 0.78, stroke: 'none'
+      }));
+
+      svg.appendChild(el('path', {
+        d: top, fill: 'none', stroke: s.color, 'stroke-width': 1.6,
+        'stroke-linejoin': 'round', 'stroke-linecap': 'round'
+      }));
+    });
+
+    container.appendChild(svg);
+  }
+
+  /* ---------------- 柱状图 ---------------- */
+  function drawBars(container, opts){
+    if(!container) return;
+    container.innerHTML = '';
+    var labels = opts.labels, series = opts.series;
+    var stacked = !!opts.stacked;
+    var h = opts.height || 170;
+    var yFmt = opts.yFmt || fmtInt;
+    var w = Math.max(container.clientWidth || 400, 240);
+    var padL = 40, padR = 12, padT = 14, padB = 22;
+    var iw = w - padL - padR, ih = h - padT - padB;
+    var n = labels.length;
+
+    var rawMax = 0;
+    if(stacked){
+      labels.forEach(function(_, i){
+        var s = 0;
+        series.forEach(function(se){ s += se.data[i]; });
+        if(s > rawMax) rawMax = s;
+      });
+    } else {
+      series.forEach(function(se){
+        se.data.forEach(function(v){ if(v > rawMax) rawMax = v; });
+      });
+    }
+    var maxV = niceMax(Math.max(rawMax, 0.001));
+    var Y = function(v){ return padT + ih - (v / maxV) * ih; };
+
+    var groupW = iw / n;
+    var gap = Math.min(groupW * 0.3, 24);
+    var inner = groupW - gap;
+
+    var svg = el('svg', { width: w, height: h, 'class': 'chart-svg' });
+
+    for(var t = 0; t <= 5; t++){
+      var val = maxV * t / 5, y = Y(val);
+      svg.appendChild(el('line', {
+        x1: padL, x2: w - padR, y1: y, y2: y, stroke: GRID, 'stroke-width': 1
+      }));
+      var tx = el('text', {
+        x: padL - 8, y: y + 3, 'text-anchor': 'end', 'font-size': 9, fill: AXIS
+      });
+      tx.textContent = yFmt(val);
+      svg.appendChild(tx);
+    }
+
+    labels.forEach(function(lb, i){
+      var t2 = el('text', {
+        x: padL + groupW * i + groupW / 2, y: h - 6,
+        'text-anchor': 'middle', 'font-size': 9, fill: AXIS
+      });
+      t2.textContent = lb;
+      svg.appendChild(t2);
+    });
+
+    labels.forEach(function(lb, i){
+      var gx = padL + groupW * i + gap / 2;
+
+      if(stacked){
+        var acc = 0;
+        series.forEach(function(s){
+          var v = s.data[i];
+          var y0 = Y(acc), y1 = Y(acc + v);
+          var rect = el('rect', {
+            x: gx, y: y1, width: inner,
+            height: Math.max(y0 - y1, 0.5),
+            fill: s.color, rx: 3
+          });
+          bindTip(rect, (function(se, idx, vv){
+            return function(){
+              return tipHtml(se.name, labels[idx], yFmt(vv) + (opts.unit || ''), se.color);
+            };
+          })(s, i, v));
+          svg.appendChild(rect);
+          acc += v;
+        });
+      } else {
+        var bw = inner / series.length;
+        series.forEach(function(s, j){
+          var v = s.data[i];
+          var barW = Math.max(bw - 3, 1);
+          var rect2 = el('rect', {
+            x: gx + bw * j, y: Y(v), width: barW,
+            height: Math.max(Y(0) - Y(v), 0.5),
+            fill: s.color, rx: 3
+          });
+          bindTip(rect2, (function(se, idx, vv){
+            return function(){
+              return tipHtml(se.name, labels[idx], yFmt(vv) + (opts.unit || ''), se.color);
+            };
+          })(s, i, v));
+          svg.appendChild(rect2);
+        });
+      }
+    });
+
+    container.appendChild(svg);
+  }
+
+  /* ---------------- 环形图 ---------------- */
+  function arcPath(cx, cy, r, a0, a1){
+    var x0 = cx + r * Math.cos(a0), y0 = cy + r * Math.sin(a0);
+    var x1 = cx + r * Math.cos(a1), y1 = cy + r * Math.sin(a1);
+    var large = (a1 - a0) > Math.PI ? 1 : 0;
+    return 'M ' + x0 + ' ' + y0 + ' A ' + r + ' ' + r + ' 0 ' + large + ' 1 ' + x1 + ' ' + y1;
+  }
+
+  function drawDonut(container, opts){
+    if(!container) return;
+    container.innerHTML = '';
+    var items = opts.items;
+    var h = opts.height || 170;
+    var thickness = opts.thickness || 20;
+    var w = Math.max(container.clientWidth || 300, 180);
+    var cx = w / 2, cy = h / 2;
+    var r = Math.min(h / 2 - thickness / 2 - 8, 58);
+    var total = items.reduce(function(a, b){ return a + b.value; }, 0);
+
+    var svg = el('svg', { width: w, height: h, 'class': 'chart-svg' });
+
+    svg.appendChild(el('circle', {
+      cx: cx, cy: cy, r: r, fill: 'none',
+      stroke: '#f2f6f4', 'stroke-width': thickness
+    }));
+
+    var a = -Math.PI / 2;
+    var gap = 0.022;
+
+    items.forEach(function(it){
+      var ang = (it.value / total) * Math.PI * 2;
+      var a0 = a + gap / 2, a1 = a + ang - gap / 2;
+      a += ang;
+      if(a1 <= a0) return;
+
+      svg.appendChild(el('path', {
+        d: arcPath(cx, cy, r, a0, a1),
+        fill: 'none',
+        stroke: it.color,
+        'stroke-width': thickness,
+        'stroke-linecap': 'butt'
+      }));
+
+      var hit = el('path', {
+        d: arcPath(cx, cy, r, a0, a1),
+        fill: 'none',
+        stroke: 'transparent',
+        'stroke-width': thickness + 16
+      });
+      bindTip(hit, (function(item){
+        return function(){
+          var pct = Math.round(item.value / total * 100);
+          return tipHtml(item.label, '', pct + '%', item.color);
+        };
+      })(it));
+      svg.appendChild(hit);
+    });
+
+    container.appendChild(svg);
+
+    if(opts.centerValue || opts.centerLabel){
+      var c = document.createElement('div');
+      c.className = 'donut-center';
+      c.innerHTML = '<b>' + (opts.centerValue || '') + '</b>'
+        + '<span>' + (opts.centerLabel || '') + '</span>';
+      container.appendChild(c);
+    }
+  }
+
+  /* ==================== 各视图图表 ==================== */
+
+  function initDashboard(){
+    drawLine(document.getElementById('c-dash-cash'), {
+      labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+      series: [
+        { name: '收入', color: '#55b99a', data: [18200, 17600, 19800, 18500, 21000, 19400] },
+        { name: '支出', color: '#e5a3b6', data: [11200, 9800, 13400, 10600, 12100, 8426] }
+      ],
+      height: 176,
+      yFmt: kFmt,
+      area: true
+    });
+  }
+
+  function initHealth(){
+    drawStackArea(document.getElementById('c-sleep'), {
+      labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+      series: [
+        { name: '深睡', color: '#3e9a7c', data: [1.7, 1.5, 1.9, 1.6, 1.8, 2.1, 1.9] },
+        { name: '浅睡', color: '#78a9dc', data: [4.0, 3.8, 4.3, 4.1, 4.4, 4.8, 4.2] },
+        { name: 'REM', color: '#a9cbe8', data: [1.3, 1.2, 1.4, 1.3, 1.5, 1.7, 1.4] }
+      ],
+      height: 186,
+      yFmt: function(v){ return (Math.round(v * 10) / 10) + 'h'; }
+    });
+
+    drawBars(document.getElementById('c-sport'), {
+      labels: ['第 1 周', '第 2 周', '第 3 周', '第 4 周'],
+      series: [
+        { name: '跑步', color: '#55b99a', data: [2.0, 2.4, 1.8, 2.2] },
+        { name: '骑行', color: '#78a9dc', data: [0.6, 0.5, 0.9, 0.7] },
+        { name: '健身', color: '#f3c96a', data: [0.8, 1.1, 0.9, 1.0] },
+        { name: '其他', color: '#cfd8d3', data: [0.3, 0.3, 0.2, 0.3] }
+      ],
+      height: 190,
+      unit: 'h',
+      yFmt: function(v){ return (Math.round(v * 10) / 10) + 'h'; }
+    });
+
+    drawLine(document.getElementById('c-weight'), {
+      labels: ['5/13', '5/20', '5/27', '6/03', '6/10', '6/12'],
+      series: [
+        { name: '体重', color: '#55b99a', data: [58.6, 58.2, 57.9, 58.1, 57.6, 57.4] }
+      ],
+      height: 186,
+      yMin: 55,
+      yMax: 60,
+      gridN: 5,
+      yFmt: function(v){ return String(Math.round(v)); },
+      valueFmt: function(v){ return v.toFixed(1) + ' kg'; },
+      area: true
+    });
+  }
+
+  function initWealth(){
+    drawBars(document.getElementById('c-month-cash'), {
+      labels: ['第 1 周', '第 2 周', '第 3 周', '第 4 周'],
+      series: [
+        { name: '收入', color: '#55b99a', data: [4200, 4600, 5100, 4200] },
+        { name: '支出', color: '#e5a3b6', data: [2100, 2400, 1900, 2026] }
+      ],
+      height: 180,
+      yFmt: kFmt
+    });
+
+    drawLine(document.getElementById('c-6m'), {
+      labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+      series: [
+        { name: '支出', color: '#78a9dc', data: [9860, 11240, 10380, 12460, 10920, 8426] }
+      ],
+      height: 180,
+      yFmt: kFmt,
+      area: true
+    });
+
+    drawDonut(document.getElementById('c-cat'), {
+      items: [
+        { label: '餐饮', value: 2860, color: '#55b99a' },
+        { label: '购物', value: 1420, color: '#f3c96a' },
+        { label: '交通', value: 1320, color: '#78a9dc' },
+        { label: '娱乐', value: 966, color: '#e5a3b6' },
+        { label: '其他', value: 1860, color: '#cfd8d3' }
+      ],
+      height: 190,
+      thickness: 22,
+      centerValue: '¥8,426',
+      centerLabel: '本月支出'
+    });
+  }
+
+  function initLife(){
+    drawDonut(document.getElementById('c-life'), {
+      items: [
+        { label: '运动', value: 12, color: '#55b99a' },
+        { label: '独处', value: 9, color: '#78a9dc' },
+        { label: '聚餐', value: 6, color: '#f3c96a' },
+        { label: '旅行', value: 3, color: '#e5a3b6' }
+      ],
+      height: 196,
+      thickness: 22,
+      centerValue: '30',
+      centerLabel: '次活动'
+    });
+
+    drawDonut(document.getElementById('c-media'), {
+      items: [
+        { label: '电影', value: 32, color: '#55b99a' },
+        { label: '剧集', value: 28, color: '#78a9dc' },
+        { label: '纪录片', value: 22, color: '#f3c96a' },
+        { label: '动画', value: 18, color: '#e5a3b6' }
+      ],
+      height: 196,
+      thickness: 22,
+      centerValue: '26',
+      centerLabel: '部'
+    });
+  }
+
+  /* ==================== 工作页日历 ==================== */
+  var CAL_EVENTS = {
+    '2025-06-03': [{ level: 'mid', text: '用户访谈整理' }],
+    '2025-06-05': [{ level: 'low', text: '周报草稿' }],
+    '2025-06-09': [{ level: 'mid', text: 'A/B 实验启动' }],
+    '2025-06-10': [{ level: 'low', text: '知识库同步' }],
+    '2025-06-11': [{ level: 'mid', text: '设计稿评审' }],
+    '2025-06-12': [
+      { level: 'high', text: '产品复盘文档' },
+      { level: 'high', text: '交互稿对齐' },
+      { level: 'ddl', text: '18:00 复盘截止' }
+    ],
+    '2025-06-13': [{ level: 'ddl', text: '10:00 交互稿评审' }],
+    '2025-06-16': [{ level: 'ddl', text: '月度数据报告' }],
+    '2025-06-18': [{ level: 'low', text: '团队分享' }],
+    '2025-06-20': [{ level: 'ddl', text: '季度 OKR 复盘' }],
+    '2025-06-24': [{ level: 'mid', text: '用户增长复盘' }],
+    '2025-06-26': [{ level: 'low', text: '知识库整理' }]
+  };
+
+  function colorOfLevel(level){
+    if(level === 'high') return '#e5a3b6';
+    if(level === 'mid') return '#f3c96a';
+    return '#55b99a';
+  }
+
+  function initCalendar(){
+    var host = document.getElementById('work-calendar');
+    if(!host) return;
+    host.innerHTML = '';
+
+    var year = 2025, month = 5; // 6 月
+    var first = new Date(year, month, 1);
+    var startOffset = (first.getDay() + 6) % 7; // 周一 = 0
+    var daysInMonth = new Date(year, month + 1, 0).getDate();
+    var prevDays = new Date(year, month, 0).getDate();
+    var totalCells = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'calendar';
+
+    var wdRow = document.createElement('div');
+    wdRow.className = 'cal-wd-row';
+    ['一','二','三','四','五','六','日'].forEach(function(d){
+      var c = document.createElement('div');
+      c.className = 'cal-wd';
+      c.textContent = d;
+      wdRow.appendChild(c);
+    });
+    wrap.appendChild(wdRow);
+
+    var grid = document.createElement('div');
+    grid.className = 'cal-grid';
+
+    for(var i = 0; i < totalCells; i++){
+      var cell = document.createElement('div');
+      cell.className = 'cal-cell';
+
+      var dayNum, dateKey = '';
+      if(i < startOffset){
+        dayNum = prevDays - startOffset + i + 1;
+        cell.classList.add('other');
+      } else if(i < startOffset + daysInMonth){
+        dayNum = i - startOffset + 1;
+        var mm = String(month + 1).padStart(2, '0');
+        var dd = String(dayNum).padStart(2, '0');
+        dateKey = year + '-' + mm + '-' + dd;
+        if(dayNum === 12) cell.classList.add('today');
+      } else {
+        dayNum = i - startOffset - daysInMonth + 1;
+        cell.classList.add('other');
+      }
+
+      var dayEl = document.createElement('span');
+      dayEl.className = 'cal-day';
+      dayEl.textContent = dayNum;
+      cell.appendChild(dayEl);
+
+      if(dateKey && CAL_EVENTS[dateKey]){
+        var evts = CAL_EVENTS[dateKey];
+        var box = document.createElement('div');
+        box.className = 'cal-evts';
+
+        evts.slice(0, 2).forEach(function(e){
+          var tag = document.createElement('span');
+          tag.className = 'cal-evt ' + e.level + (e.level === 'ddl' ? ' ddl' : '');
+          tag.textContent = e.text;
+          tag.setAttribute('data-level', e.level);
+          box.appendChild(tag);
+        });
+
+        if(evts.length > 2){
+          var more = document.createElement('span');
+          more.className = 'cal-more';
+          more.textContent = '+' + (evts.length - 2);
+          box.appendChild(more);
+        }
+
+        cell.appendChild(box);
+      }
+
+      grid.appendChild(cell);
+    }
+
+    wrap.appendChild(grid);
+    host.appendChild(wrap);
+
+    /* 绑定日历事件 tooltip */
+    var evtNodes = host.querySelectorAll('.cal-evt');
+    for(var k = 0; k < evtNodes.length; k++){
+      (function(node){
+        var text = node.textContent;
+        var level = node.getAttribute('data-level') || 'low';
+        var color = colorOfLevel(level);
+        bindTip(node, function(){
+          return '<span class="tip-dot" style="background:' + color + '"></span>' + text;
+        });
+      })(evtNodes[k]);
+    }
+  }
+
+  /* ==================== 习惯打卡交互 ==================== */
+  function initHabits(){
+    var habits = document.querySelectorAll('[data-habit]');
+    for(var i = 0; i < habits.length; i++){
+      (function(node){
+        node.addEventListener('click', function(){
+          node.classList.toggle('done');
+        });
+      })(habits[i]);
+    }
+  }
+
+  /* ==================== 笔记预览 ==================== */
+  var NOTES = {
+    n1: {
+      title: '《慢思考》读书笔记',
+      tag: '#读书',
+      time: '2 小时前 · 1,240 字',
+      tags: ['#读书', '#认知', '#2025'],
+      body: '<p>注意力不是无限资源，而是一种需要被保护的稀缺品。这一章讲「专注的节奏」，作者把一天分成三种状态：深度工作、浅层处理、恢复。</p>'
+          + '<h4>关键提醒</h4>'
+          + '<p>不要把「休息」当成偷懒，它是下一段专注的入场券。试着把手机放在另一个房间，只用纸笔记录当天最重要的三件事。</p>'
+          + '<p>读到这里时，我想到自己每天下午三点的疲惫，也许不是需要咖啡，而是需要一次真正的空白。</p>'
+          + '<p>另外，作者在书里反复提到「单任务」的价值。我们总觉得同时处理多件事是效率，其实每一次切换都在悄悄消耗注意力。真正高效的，往往是把一件事做到彻底，然后安心离开。</p>'
+          + '<p>这一点放在写作上也成立：与其开五个文档各写一半，不如先把一篇写完。</p>'
+    },
+    n2: {
+      title: '关于「生活台」的信息架构',
+      tag: '#产品',
+      time: '昨天 · 2,180 字',
+      tags: ['#产品', '#设计', '#信息架构'],
+      body: '<p>把生活数据收进一个面板时，最先要解决的不是「放什么」，而是「按什么顺序放」。首页应该回答的是：我今天过得怎么样？</p>'
+          + '<h4>结构草稿</h4>'
+          + '<p>第一层：健康 / 财富 / 工作 / 生活 / 笔记，五条主线；第二层：每条主线内部再分成「概览—趋势—明细」三级。</p>'
+          + '<p>暂定首页保留 4 个指标 + 1 张趋势图 + 1 个任务列表，其余的收进二级页面，避免信息过载。</p>'
+          + '<p>生活与媒体合并之后，用「活动分布」和「内容类型」两张环形图做入口，比纯列表更容易一眼抓住重点。</p>'
+    },
+    n3: {
+      title: '六月的三件小事',
+      tag: '#生活',
+      time: '2 天前 · 680 字',
+      tags: ['#生活', '#记录'],
+      body: '<p>这个月想认真记下三件很小、但让我开心了一阵子的事。</p>'
+          + '<h4>一</h4>'
+          + '<p>周三下班路上看到一只橘猫趴在共享单车的车筐里，怎么叫都不动。</p>'
+          + '<h4>二</h4>'
+          + '<p>第一次自己做舒芙蕾，虽然塌了一半，但味道意外地好。</p>'
+          + '<p>还有一件写在周末的日记里，暂时不公开。</p>'
+    },
+    n4: {
+      title: '月度预算复盘',
+      tag: '#财务',
+      time: '3 天前 · 960 字',
+      tags: ['#财务', '#复盘'],
+      body: '<p>本月支出 ¥8,426，比上月少了 12.8%，主要来自餐饮和交通的下降。</p>'
+          + '<h4>需要留意的</h4>'
+          + '<p>娱乐支出比上月高 22%，主要是一次演出门票。下个月把娱乐预算收紧到 ¥1,000。</p>'
+          + '<p>储蓄率 53.7%，高于年度目标的月度节奏，保持。</p>'
+    },
+    n5: {
+      title: '跑步训练计划调整',
+      tag: '#健康',
+      time: '5 天前 · 540 字',
+      tags: ['#健康', '#运动'],
+      body: '<p>连续三周跑量都在 20km 左右，身体适应得不错，可以适当加一点强度。</p>'
+          + '<h4>下阶段安排</h4>'
+          + '<p>周二、周四各一次 5km 轻松跑，周六一次 8km 长距离，配速控制在 6\'30" 左右。</p>'
+          + '<p>每月最后一个周末安排一次恢复周，跑量减半。</p>'
+    }
+  };
+
+  function initNotes(){
+    var items = document.querySelectorAll('[data-note]');
+    var pvTitle = document.getElementById('pv-title');
+    var pvTag = document.getElementById('pv-tag');
+    var pvTime = document.getElementById('pv-time');
+    var pvBody = document.getElementById('pv-body');
+    var pvFoot = document.querySelector('.preview-foot');
+
+    function select(node){
+      for(var i = 0; i < items.length; i++){ items[i].classList.remove('on'); }
+      node.classList.add('on');
+
+      var d = NOTES[node.getAttribute('data-note')];
+      if(!d) return;
+
+      pvTitle.textContent = d.title;
+      pvTag.textContent = d.tag;
+      pvTime.textContent = d.time;
+      pvBody.innerHTML = d.body;
+
+      if(pvFoot){
+        var colors = ['low', 'blue', 'mid'];
+        var html = '';
+        d.tags.forEach(function(t, i){
+          html += '<span class="pill ' + colors[i % colors.length] + '">' + t + '</span>';
+        });
+        pvFoot.innerHTML = html;
+      }
+    }
+
+    for(var i = 0; i < items.length; i++){
+      (function(node){
+        node.addEventListener('click', function(){ select(node); });
+      })(items[i]);
+    }
+  }
+
+  /* ==================== 视图切换 ==================== */
+  var chartInit = {
+    dashboard: initDashboard,
+    health: initHealth,
+    wealth: initWealth,
+    work: initCalendar,
+    life: initLife
+  };
+
+  var currentView = 'dashboard';
+
+  function showView(name){
+    currentView = name;
+
+    var views = document.querySelectorAll('.view');
+    for(var i = 0; i < views.length; i++){
+      views[i].classList.toggle('active', views[i].getAttribute('data-view') === name);
+    }
+
+    var navs = document.querySelectorAll('.nav-item');
+    for(var j = 0; j < navs.length; j++){
+      navs[j].classList.toggle('active', navs[j].getAttribute('data-view') === name);
+    }
+
+    hideTip();
+    window.scrollTo(0, 0);
+
+    requestAnimationFrame(function(){
+      if(chartInit[name]) chartInit[name]();
+    });
+  }
+
+  var navItems = document.querySelectorAll('.nav-item[data-view]');
+  for(var i = 0; i < navItems.length; i++){
+    (function(node){
+      node.addEventListener('click', function(){
+        showView(node.getAttribute('data-view'));
+      });
+    })(navItems[i]);
+  }
+
+  /* ==================== 自适应重绘 ==================== */
+  var rt = null;
+  window.addEventListener('resize', function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){
+      if(chartInit[currentView]) chartInit[currentView]();
+    }, 140);
+  });
+
+  /* ==================== 初始化 ==================== */
+  initHabits();
+  initNotes();
+  showView('dashboard');
+
+})();
+</script>
+</body>
+</html>

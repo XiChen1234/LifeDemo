@@ -1,0 +1,73 @@
+@import './styles/tokens.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===================== 通用网格 / 卡片 ===================== */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.grid {
+  display: grid;
+  gap: 14px;
+}
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.g13 { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+.g31 { grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); }
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  padding: 16px 16px 14px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid #f2f6f4;
+}
+
+/* ===================== 进度条 ===================== */
+.bar {
+  height: 6px;
+  border-radius: 99px;
+  background: #eff4f1;
+  overflow: hidden;
+}
+.bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--green);
+  transition: width 0.4s ease;
+}
+.bar.sm { height: 4px; }
+
+/* ===================== 涨跌 ===================== */
+.up { color: var(--success); }
+.down { color: var(--danger); }
+
+/* ===================== 页面切换动画 ===================== */
+.fade-enter-active { transition: opacity 0.2s ease, transform 0.2s ease; }
+.fade-enter-from { opacity: 0; transform: translateY(3px); }
+
+/* ===================== 响应式 ===================== */
+@media (max-width: 1120px) {
+  .g4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g13, .g31 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .g3, .g2 { grid-template-columns: minmax(0, 1fr); }
+}
