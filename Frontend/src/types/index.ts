@@ -1,10 +1,12 @@
-/** 全局领域模型类型定义 */
+/** 全局领域模型类型定义。后端为事实来源，以下类型放宽 literal union。 */
 
 // ---------- 通用 ----------
-export type Priority = 'high' | 'mid' | 'low'
-export type BarColor = 'green' | 'blue' | 'yellow' | 'pink' | 'danger' | 'gray'
+export type Priority = 'high' | 'mid' | 'low' | string
+export type BarColor = string // 'green' | 'blue' | 'yellow' | 'pink' | 'danger' | 'gray'
+export type Level = 'low' | 'mid' | 'high' | 'blue' | 'pink' | string
 
 export interface Metric {
+  key?: string
   label: string
   value: string
   foot?: string
@@ -17,6 +19,8 @@ export interface Task {
   text: string
   done: boolean
   priority: Priority
+  title?: string
+  area?: string
 }
 
 export interface Goal {
@@ -49,7 +53,7 @@ export interface SleepRecord {
   duration: string
   deep: string
   quality: string
-  qualityLevel: 'low' | 'mid'
+  qualityLevel: Level
 }
 
 export interface Habit {
@@ -66,7 +70,7 @@ export interface Habit {
 export interface Transaction {
   id: string
   category: string
-  categoryClass: 'low' | 'mid' | 'blue' | 'pink'
+  categoryClass: Level
   title: string
   time: string
   amount: string
@@ -96,6 +100,7 @@ export interface Deadline {
 }
 
 export interface Project {
+  id?: string
   name: string
   percent: number
   stage: string
@@ -106,10 +111,10 @@ export interface Project {
 export interface MediaItem {
   id: string
   type: string
-  typeClass: 'low' | 'mid' | 'blue' | 'pink'
+  typeClass: Level
   title: string
   meta: string
-  rating: number // 0-5
+  rating: number
 }
 
 // ---------- 笔记 ----------
@@ -126,11 +131,11 @@ export interface Note {
   folderId: string
   title: string
   tag: string
-  tagClass: 'low' | 'mid' | 'blue' | 'pink'
+  tagClass: Level
   timeAgo: string
   words: number
   paragraphs: NoteBlock[]
-  tags: { text: string; class: 'low' | 'mid' | 'blue' | 'pink' }[]
+  tags: { text: string; class: Level }[]
 }
 
 export type NoteBlock =

@@ -1,4 +1,4 @@
-import type { Metric, Task, Goal, ProgressItem, RecentNote } from '../types'
+import type { Metric, Goal, ProgressItem, RecentNote } from '../types'
 
 export const mockDashHero = {
   greeting: '早安，Lin',
@@ -27,16 +27,6 @@ export const mockCashTrend = {
   income: [18200, 17600, 19800, 18500, 21000, 19400],
   expense: [11200, 9800, 13400, 10600, 12100, 8426],
 }
-
-export const mockTodayTasks: Task[] = [
-  { id: 'dt1', text: '提交本周周报', done: true, priority: 'high' },
-  { id: 'dt2', text: '晨跑 5km', done: true, priority: 'mid' },
-  { id: 'dt3', text: '回复 3 封邮件', done: true, priority: 'low' },
-  { id: 'dt4', text: '写 Q2 产品复盘文档', done: false, priority: 'high' },
-  { id: 'dt5', text: '和设计对齐新版本交互稿', done: false, priority: 'mid' },
-  { id: 'dt6', text: '整理桌面文件夹', done: false, priority: 'low' },
-  { id: 'dt7', text: '读《慢思考》20 页', done: false, priority: 'low' },
-]
 
 export const mockExpenseStructure: ProgressItem[] = [
   { name: '餐饮', valueText: '¥2,860', percent: 100, color: 'green' },

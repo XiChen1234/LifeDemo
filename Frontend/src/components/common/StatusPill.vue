@@ -2,7 +2,7 @@
 withDefaults(
   defineProps<{
     text: string
-    level?: 'high' | 'mid' | 'low' | 'blue' | 'pink'
+    level?: string
   }>(),
   { level: 'low' }
 )

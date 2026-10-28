@@ -13,8 +13,10 @@ import ChartLegend from '../components/common/ChartLegend.vue'
 import VChart from '../components/chart/VChart.vue'
 import { PALETTE, chartTooltip, categoryAxis, valueAxis, chartGrid } from '../components/chart/theme'
 import { useDashboardStore } from '../stores/dashboard'
+import { useWorkStore } from '../stores/work'
 
 const dash = useDashboardStore()
+const work = useWorkStore()
 
 const cashLegend = [
   { label: '收入', color: PALETTE[0] },
@@ -91,13 +93,13 @@ const cashOption = computed<EChartsOption>(() => ({
           <div class="chart-box"><VChart :option="cashOption" /></div>
         </AppCard>
 
-        <AppCard title="今天要做" :sub="`已完成 ${dash.taskDoneCount} / ${dash.todayTasks.length}`">
+        <AppCard title="今天要做" :sub="`已完成 ${work.todoDoneCount} / ${work.todos.length}`">
           <TaskItem
-            v-for="task in dash.todayTasks"
+            v-for="task in work.todos"
             :key="task.id"
             :task="task"
             :show-priority="false"
-            @toggle="dash.toggleTask"
+            @toggle="work.toggleTodo"
           />
         </AppCard>
       </div>

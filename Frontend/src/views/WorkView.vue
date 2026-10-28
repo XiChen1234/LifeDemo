@@ -29,7 +29,7 @@ const priorityGroups = [
 
 <template>
   <div>
-    <ViewHead title="工作" sub="今天有 3 项高优先级任务 · 专注 4h20m" tag="本周完成 18 项" />
+    <ViewHead title="工作" sub="今天有 3 项高优先级任务" tag="本周完成 18 项" />
 
     <div class="stack">
       <PageBanner :title="work.banner.title" :desc="work.banner.desc" :chips="work.banner.chips" />

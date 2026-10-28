@@ -3,7 +3,7 @@ import type { Task, Deadline, Project, CalendarEvent } from '../types'
 export const mockWorkBanner = {
   title: '今天节奏不错',
   desc: '3 项高优先级任务，2 个 DDL 落在本周，项目整体推进顺利。上午适合先攻复盘文档。',
-  chips: ['今日 3 高优', '本周 2 DDL', '专注 4h20m'],
+  chips: ['今日 3 高优', '本周 2 DDL'],
 }
 
 export const mockCalendarMeta = {
